@@ -176,7 +176,7 @@
                 <div class="form-section">
                     <div class="form-section-title">
                         <div class="step-number">1</div>
-                        <h3>Facturation</h3>
+                        <h3>Informations</h3>
                     </div>
 
                     <div class="form-group">
@@ -226,6 +226,7 @@
                     <div class="payment-methods-divider">
                         <p class="payment-methods-label">Ou payer avec</p>
                         <div id="payment-request-button"></div>
+                        <div id="paypal-button-container" style="margin-top: 1rem;"></div>
                     </div>
                 </div>
 
@@ -238,6 +239,7 @@
     </div>
 
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AZo-hOMXFtPngpM-d5ItpMCnEb_JuNmIjzJfTb1C_qxv1HsmHzKKmLQVGY0GVJdh5KfEp0l8vXLhFJuZ&currency=EUR"></script>
 
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
@@ -349,12 +351,7 @@
                     e.complete('fail');
                 } else {
                     e.complete('success');
-                    successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
-                    successDiv.style.display = 'block';
-                    form.style.display = 'none';
-                    setTimeout(() => {
-                        window.location.href = '/merci.html';
-                    }, 3000);
+                    window.location.href = '/merci.html';
                 }
             } catch (err) {
                 e.complete('fail');
@@ -362,6 +359,56 @@
                 cardErrors.style.display = 'block';
             }
         });
+
+        // PayPal Button
+        if (typeof paypal !== 'undefined') {
+            paypal.Buttons({
+                createOrder: async (data, actions) => {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '20.00',
+                                currency_code: 'EUR'
+                            }
+                        }],
+                        payer: {
+                            name: {
+                                given_name: document.getElementById('name').value || 'Customer'
+                            },
+                            email_address: document.getElementById('email').value || ''
+                        }
+                    });
+                },
+                onApprove: async (data, actions) => {
+                    const order = await actions.order.capture();
+                    const email = document.getElementById('email').value;
+                    const name = document.getElementById('name').value;
+
+                    try {
+                        await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: 2000,
+                                email: email,
+                                name: name,
+                                paypalOrderId: order.id
+                            })
+                        });
+                        window.location.href = '/merci.html';
+                    } catch (err) {
+                        console.error('Error:', err);
+                        cardErrors.textContent = 'Erreur lors du traitement du paiement PayPal';
+                        cardErrors.style.display = 'block';
+                    }
+                },
+                onError: (err) => {
+                    console.error('PayPal error:', err);
+                    cardErrors.textContent = 'Erreur PayPal';
+                    cardErrors.style.display = 'block';
+                }
+            }).render('#paypal-button-container');
+        }
 
         // Soumission du formulaire (Carte bancaire avec 3 éléments séparés)
         form.addEventListener('submit', async (e) => {
@@ -410,12 +457,7 @@
                     cardErrors.textContent = error.message;
                     cardErrors.style.display = 'block';
                 } else if (paymentIntent.status === 'succeeded') {
-                    successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
-                    successDiv.style.display = 'block';
-                    form.style.display = 'none';
-                    setTimeout(() => {
-                        window.location.href = '/merci.html';
-                    }, 3000);
+                    window.location.href = '/merci.html';
                 }
             } catch (err) {
                 console.error('Error:', err);
