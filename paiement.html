@@ -194,8 +194,6 @@
 
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
-        const elements = stripe.elements();
-        let paymentElement;
 
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
@@ -203,23 +201,23 @@
         const successDiv = document.getElementById('success-message');
         const loadingDiv = document.getElementById('loading');
 
-        // Initialiser Payment Element une fois que le client secret est disponible
-        let clientSecret = null;
+        let elements;
+        let paymentElement;
+        let clientSecret;
 
-        // Soumission du formulaire
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            submitButton.disabled = true;
-            loadingDiv.style.display = 'block';
-
+        // Initialiser Payment Element au chargement de la page
+        async function initPaymentElement() {
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
 
+            if (!email || !name) {
+                errorDiv.textContent = 'Prénom et Email requis pour initialiser le paiement';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
             try {
-                // Crée le Payment Intent côté serveur
+                // Crée le Payment Intent
                 const response = await fetch('/api/create-payment-intent', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -237,29 +235,47 @@
 
                 clientSecret = data.clientSecret;
 
-                // Initialiser Payment Element si ce n'est pas déjà fait
-                if (!paymentElement) {
-                    paymentElement = elements.create('payment', {
-                        clientSecret: clientSecret,
-                        business: {
-                            name: 'PAKT'
-                        }
-                    });
-                    paymentElement.mount('#payment-element');
-                }
+                // Crée les éléments Stripe
+                elements = stripe.elements({ clientSecret: clientSecret });
 
+                // Crée et monte le Payment Element
+                paymentElement = elements.create('payment');
+                paymentElement.mount('#payment-element');
+
+                errorDiv.style.display = 'none';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                console.error('Init error:', error);
+            }
+        }
+
+        // Initialiser au changement d'email ou prénom
+        document.getElementById('email').addEventListener('change', initPaymentElement);
+        document.getElementById('name').addEventListener('change', initPaymentElement);
+
+        // Soumission du formulaire
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!clientSecret) {
+                errorDiv.textContent = 'Veuillez remplir vos informations d\'abord';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            submitButton.disabled = true;
+            loadingDiv.style.display = 'block';
+
+            try {
                 // Confirmer le paiement
                 const { error, paymentIntent } = await stripe.confirmPayment({
                     elements,
                     clientSecret: clientSecret,
                     confirmParams: {
-                        return_url: `${window.location.origin}/merci.html`,
-                        payment_method_data: {
-                            billing_details: {
-                                name: name,
-                                email: email
-                            }
-                        }
+                        return_url: `${window.location.origin}/merci.html`
                     },
                     redirect: 'if_required'
                 });
