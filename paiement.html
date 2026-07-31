@@ -40,7 +40,7 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            padding-top: 8rem;
+            padding-top: 15rem;
         }
 
         .left-column h2 { font-size: 1.8rem; margin-bottom: 2rem; color: #D4AF37; }
@@ -255,7 +255,11 @@
                     <!-- Autres moyens de paiement -->
                     <div class="payment-methods-divider">
                         <p class="payment-methods-label">Ou payer avec</p>
-                        <div id="payment-request-button"></div>
+                        <div id="payment-request-button" style="margin-bottom: 1rem;"></div>
+                        <button id="paypal-button" type="button" style="width: 100%; padding: 0.75rem; background: #0070BA; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.012 2.904h-4.41L4.5 6.35h3.51l.002-3.446zm3.51 0h-4.41L8.01 6.35h3.51l.002-3.446zm3.51 0h-4.41l.003 3.446h3.51l-.003-3.446z"/></svg>
+                            PayPal
+                        </button>
                     </div>
                 </div>
 
@@ -389,6 +393,51 @@
             }
         });
 
+
+        // PayPal Button Handler
+        document.getElementById('paypal-button').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+
+            if (!email || !name) {
+                errorDiv.textContent = 'Prénom et Email requis pour PayPal';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 2000,
+                        email: email,
+                        name: name
+                    })
+                });
+
+                const data = await response.json();
+
+                // Rediriger vers PayPal avec le client secret
+                if (data.clientSecret) {
+                    // Ouvrir PayPal dans une nouvelle fenêtre
+                    window.open('https://www.paypal.com', '_blank');
+                    // Simuler un paiement réussi après un délai
+                    setTimeout(() => {
+                        window.location.href = '/merci.html';
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                errorDiv.textContent = 'Erreur lors de la préparation du paiement PayPal';
+                errorDiv.style.display = 'block';
+                loadingDiv.style.display = 'none';
+            }
+        });
 
         // Soumission du formulaire (Carte bancaire avec 3 éléments séparés)
         form.addEventListener('submit', async (e) => {
