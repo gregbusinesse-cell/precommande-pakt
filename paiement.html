@@ -189,8 +189,16 @@
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
         const elements = stripe.elements();
-        const cardElement = elements.create('card', { hidePostalCode: true });
-        cardElement.mount('#card-element');
+
+        // Créer 3 éléments Stripe SÉPARÉS pour la carte
+        const cardNumber = elements.create('cardNumber');
+        const cardExpiry = elements.create('cardExpiry');
+        const cardCvc = elements.create('cardCvc');
+
+        // Monter les éléments dans leurs conteneurs respectifs
+        cardNumber.mount('#card-element');
+        cardExpiry.mount('#card-expiry-placeholder');
+        cardCvc.mount('#card-cvc-placeholder');
 
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
@@ -199,14 +207,16 @@
         const loadingDiv = document.getElementById('loading');
         const cardErrors = document.getElementById('card-errors');
 
-        // Gestion des erreurs
-        cardElement.addEventListener('change', (event) => {
-            if (event.error) {
-                cardErrors.textContent = event.error.message;
-                cardErrors.style.display = 'block';
-            } else {
-                cardErrors.style.display = 'none';
-            }
+        // Gestion des erreurs pour les 3 éléments
+        [cardNumber, cardExpiry, cardCvc].forEach(element => {
+            element.addEventListener('change', (event) => {
+                if (event.error) {
+                    cardErrors.textContent = event.error.message;
+                    cardErrors.style.display = 'block';
+                } else {
+                    cardErrors.style.display = 'none';
+                }
+            });
         });
 
         // Payment Request Button (Google Pay, Apple Pay, PayPal)
@@ -274,7 +284,7 @@
             }
         });
 
-        // Soumission du formulaire (Carte bancaire)
+        // Soumission du formulaire (Carte bancaire avec 3 éléments séparés)
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -306,7 +316,7 @@
                 const data = await response.json();
                 const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
                     payment_method: {
-                        card: cardElement,
+                        card: cardNumber,
                         billing_details: {
                             name: name,
                             email: email
