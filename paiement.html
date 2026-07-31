@@ -74,7 +74,7 @@
         .benefits ol { margin-left: 1.5rem; color: #FFFFFF99; }
         .benefits li { margin-bottom: 0.8rem; }
 
-        #payment-element { margin-bottom: 1.5rem; }
+        .stripe-element { padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; }
 
         .loading { display: none; text-align: center; }
         .spinner { border: 3px solid #333333; border-top: 3px solid #D4AF37; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 1rem auto; }
@@ -137,8 +137,9 @@
             <div class="payment-card">
                 <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Moyens de paiement</h2>
 
-                <div id="payment-element"></div>
+                <div id="payment-request-button" style="margin-bottom: 1.5rem;"></div>
 
+                <div id="card-element" class="stripe-element"></div>
                 <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem; display: none;"></div>
 
                 <button type="submit" class="button" id="submit-button">Payer 20€</button>
@@ -162,11 +163,14 @@
         </div>
     </div>
 
-    <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
 
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', { hidePostalCode: true });
+        cardElement.mount('#card-element');
+
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
         const errorDiv = document.getElementById('error-message');
@@ -174,19 +178,48 @@
         const loadingDiv = document.getElementById('loading');
         const cardErrors = document.getElementById('card-errors');
 
-        let elements;
-        let paymentElement;
-        let clientSecret;
+        // Gestion des erreurs
+        cardElement.addEventListener('change', (event) => {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+                cardErrors.style.display = 'block';
+            } else {
+                cardErrors.style.display = 'none';
+            }
+        });
 
-        // Initialiser Payment Element quand l'utilisateur remplit ses infos
-        async function initializePaymentElement() {
+        // Payment Request Button (Google Pay, Apple Pay, PayPal)
+        const paymentRequest = stripe.paymentRequest({
+            country: 'FR',
+            currency: 'eur',
+            total: {
+                label: 'PAKT Membership',
+                amount: 2000
+            }
+        });
+
+        const prb = elements.create('paymentRequestButton', { paymentRequest });
+
+        paymentRequest.canMakePayment().then(result => {
+            if (result) {
+                prb.mount('#payment-request-button');
+            } else {
+                document.getElementById('payment-request-button').style.display = 'none';
+            }
+        });
+
+        paymentRequest.on('paymentmethod', async (e) => {
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
 
-            if (!email || !name) return;
+            if (!email || !name) {
+                e.complete('fail');
+                errorDiv.textContent = 'Prénom et Email requis';
+                errorDiv.style.display = 'block';
+                return;
+            }
 
             try {
-                // Créer le Payment Intent
                 const response = await fetch('/api/create-payment-intent', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -198,35 +231,37 @@
                 });
 
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Erreur serveur');
+                const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: e.paymentMethod.id
+                });
 
-                clientSecret = data.clientSecret;
-
-                // Créer les éléments Stripe avec le clientSecret
-                elements = stripe.elements({ clientSecret });
-
-                // Montrer le Payment Element qui supporte TOUT
-                paymentElement = elements.create('payment');
-                paymentElement.mount('#payment-element');
-
-                errorDiv.style.display = 'none';
+                if (error) {
+                    e.complete('fail');
+                } else {
+                    e.complete('success');
+                    successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
+                    successDiv.style.display = 'block';
+                    form.style.display = 'none';
+                    setTimeout(() => {
+                        window.location.href = '/merci.html';
+                    }, 3000);
+                }
             } catch (err) {
-                console.error('Init error:', err);
-                errorDiv.textContent = err.message;
-                errorDiv.style.display = 'block';
+                e.complete('fail');
+                cardErrors.textContent = err.message;
+                cardErrors.style.display = 'block';
             }
-        }
+        });
 
-        // Initialiser Payment Element au changement d'email ou prénom
-        document.getElementById('email').addEventListener('blur', initializePaymentElement);
-        document.getElementById('name').addEventListener('blur', initializePaymentElement);
-
-        // Soumission du formulaire
+        // Soumission du formulaire (Carte bancaire)
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            if (!clientSecret) {
-                errorDiv.textContent = 'Veuillez remplir vos informations';
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+
+            if (!email || !name) {
+                errorDiv.textContent = 'Prénom et Email requis';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -237,14 +272,25 @@
             loadingDiv.style.display = 'block';
 
             try {
-                // Confirmer le paiement
-                const { error, paymentIntent } = await stripe.confirmPayment({
-                    elements,
-                    clientSecret: clientSecret,
-                    confirmParams: {
-                        return_url: `${window.location.origin}/merci.html`
-                    },
-                    redirect: 'if_required'
+                const response = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 2000,
+                        email: email,
+                        name: name
+                    })
+                });
+
+                const data = await response.json();
+                const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: name,
+                            email: email
+                        }
+                    }
                 });
 
                 loadingDiv.style.display = 'none';
@@ -253,7 +299,7 @@
                 if (error) {
                     cardErrors.textContent = error.message;
                     cardErrors.style.display = 'block';
-                } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                } else if (paymentIntent.status === 'succeeded') {
                     successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
                     successDiv.style.display = 'block';
                     form.style.display = 'none';
