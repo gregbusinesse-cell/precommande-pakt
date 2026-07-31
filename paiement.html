@@ -27,10 +27,10 @@
         nav a { color: #FFFFFF; text-decoration: none; margin-left: 2rem; }
         nav a:hover { color: #D4AF37; }
 
-        .container { max-width: 600px; margin: 0 auto; padding: 4rem 2rem; }
+        .container { max-width: 600px; margin: 0 auto; padding: 3rem 2rem; }
 
         h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #D4AF37; }
-        .subtitle { color: #FFFFFF99; font-size: 1.1rem; margin-bottom: 3rem; }
+        .subtitle { color: #FFFFFF99; font-size: 1.1rem; margin-bottom: 2rem; }
 
         .payment-card { background: #1a1a1a; border: 1px solid #333333; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
 
@@ -39,8 +39,8 @@
 
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        input, select { width: 100%; padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; color: #FFFFFF; font-size: 1rem; }
-        input:focus, select:focus { outline: none; border-color: #D4AF37; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; color: #FFFFFF; font-size: 1rem; }
+        input:focus { outline: none; border-color: #D4AF37; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
@@ -73,34 +73,10 @@
         }
 
         .benefits h3 { margin-bottom: 1rem; color: #D4AF37; }
-        .benefits ul { margin-left: 1.5rem; }
-        .benefits li { margin-bottom: 0.8rem; color: #FFFFFF99; }
+        .benefits ol { margin-left: 1.5rem; color: #FFFFFF99; }
+        .benefits li { margin-bottom: 0.8rem; }
 
         .stripe-element { padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; }
-
-        #payment-element { padding: 1rem 0; }
-
-        .payment-methods-divider {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 2rem 0 1.5rem;
-        }
-
-        .payment-methods-divider::before,
-        .payment-methods-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #333333;
-        }
-
-        .payment-methods-divider span {
-            color: #FFFFFF99;
-            font-size: 0.9rem;
-        }
-
-        .payment-request-button { margin-top: 1rem; }
 
         .loading { display: none; text-align: center; }
         .spinner { border: 3px solid #333333; border-top: 3px solid #D4AF37; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 1rem auto; }
@@ -143,7 +119,7 @@
             <div class="success" id="success-message"></div>
 
             <div class="payment-card">
-                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations personnelles</h2>
+                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Vos informations</h2>
 
                 <div class="form-group">
                     <label for="name">Prénom *</label>
@@ -162,11 +138,10 @@
             </div>
 
             <div class="payment-card">
-                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations de paiement</h2>
+                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Moyens de paiement</h2>
 
-                <!-- Stripe Payment Element avec support Google Pay, Apple Pay, PayPal, Link -->
-                <div id="payment-element"></div>
-                <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem;"></div>
+                <div id="card-element" class="stripe-element"></div>
+                <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem; display: none;"></div>
 
                 <button type="submit" class="button" id="submit-button">Payer 20€</button>
             </div>
@@ -179,7 +154,7 @@
 
         <div class="benefits">
             <h3>Après le paiement</h3>
-            <ol style="margin-left: 1.5rem; color: #FFFFFF99;">
+            <ol>
                 <li>Tu reçois un email avec ton code promo unique</li>
                 <li>Reste bien à l'affût ! Tu seras parmi les premiers informés quand PAKT sort (septembre 2026)</li>
                 <li>Dès que l'app est disponible, tu reçois une notification</li>
@@ -194,27 +169,44 @@
 
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', { hidePostalCode: true });
+        cardElement.mount('#card-element');
 
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
         const errorDiv = document.getElementById('error-message');
         const successDiv = document.getElementById('success-message');
         const loadingDiv = document.getElementById('loading');
+        const cardErrors = document.getElementById('card-errors');
 
-        let elements;
-        let paymentElement;
-        let clientSecret;
+        // Gestion des erreurs carte
+        cardElement.addEventListener('change', (event) => {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+                cardErrors.style.display = 'block';
+            } else {
+                cardErrors.style.display = 'none';
+            }
+        });
 
-        // Initialiser Payment Element au chargement de la page
-        async function initPaymentElement() {
+        // Soumission du formulaire
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
 
             if (!email || !name) {
-                errorDiv.textContent = 'Prénom et Email requis pour initialiser le paiement';
+                errorDiv.textContent = 'Prénom et Email requis';
                 errorDiv.style.display = 'block';
                 return;
             }
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            submitButton.disabled = true;
+            loadingDiv.style.display = 'block';
 
             try {
                 // Crée le Payment Intent
@@ -230,64 +222,27 @@
 
                 const data = await response.json();
                 if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create payment intent');
+                    throw new Error(data.error || 'Erreur serveur');
                 }
 
-                clientSecret = data.clientSecret;
-
-                // Crée les éléments Stripe
-                elements = stripe.elements({ clientSecret: clientSecret });
-
-                // Crée et monte le Payment Element
-                paymentElement = elements.create('payment');
-                paymentElement.mount('#payment-element');
-
-                errorDiv.style.display = 'none';
-            } catch (error) {
-                errorDiv.textContent = error.message;
-                errorDiv.style.display = 'block';
-                console.error('Init error:', error);
-            }
-        }
-
-        // Initialiser au changement d'email ou prénom
-        document.getElementById('email').addEventListener('change', initPaymentElement);
-        document.getElementById('name').addEventListener('change', initPaymentElement);
-
-        // Soumission du formulaire
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (!clientSecret) {
-                errorDiv.textContent = 'Veuillez remplir vos informations d\'abord';
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            submitButton.disabled = true;
-            loadingDiv.style.display = 'block';
-
-            try {
-                // Confirmer le paiement
-                const { error, paymentIntent } = await stripe.confirmPayment({
-                    elements,
-                    clientSecret: clientSecret,
-                    confirmParams: {
-                        return_url: `${window.location.origin}/merci.html`
-                    },
-                    redirect: 'if_required'
+                // Confirme le paiement avec confirmCardPayment
+                const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: name,
+                            email: email
+                        }
+                    }
                 });
 
                 loadingDiv.style.display = 'none';
                 submitButton.disabled = false;
 
                 if (error) {
-                    errorDiv.textContent = `Erreur de paiement: ${error.message}`;
+                    errorDiv.textContent = `Erreur: ${error.message}`;
                     errorDiv.style.display = 'block';
-                    console.error('Payment error:', error);
-                } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                } else if (paymentIntent.status === 'succeeded') {
                     successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
                     successDiv.style.display = 'block';
                     form.style.display = 'none';
