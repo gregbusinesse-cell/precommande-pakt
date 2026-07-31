@@ -236,9 +236,8 @@
                 successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
                 successDiv.style.display = 'block';
                 form.style.display = 'none';
-                // Redirection après 3 secondes
                 setTimeout(() => {
-                    window.location.href = '/merci';
+                    window.location.href = '/merci.html';
                 }, 3000);
             }
         });
