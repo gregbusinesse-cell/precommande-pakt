@@ -164,8 +164,21 @@
 
                 <!-- Autres moyens de paiement -->
                 <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333333;">
-                    <p style="color: #FFFFFF99; font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">Ou payer avec</p>
-                    <div id="payment-request-button"></div>
+                    <p style="color: #FFFFFF99; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">Ou payer avec</p>
+                    <div id="payment-request-button" style="display: none;"></div>
+
+                    <!-- Boutons de paiement alternatifs -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                        <button type="button" id="google-pay-btn" style="padding: 0.75rem; background: #FFFFFF; border: 1px solid #333333; border-radius: 6px; cursor: pointer; font-weight: 600; display: none;">
+                            Google Pay
+                        </button>
+                        <button type="button" id="apple-pay-btn" style="padding: 0.75rem; background: #000000; color: #FFFFFF; border: 1px solid #333333; border-radius: 6px; cursor: pointer; font-weight: 600; display: none;">
+                            Apple Pay
+                        </button>
+                        <button type="button" id="paypal-btn" style="padding: 0.75rem; background: #003087; color: #FFFFFF; border: 1px solid #333333; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            PayPal
+                        </button>
+                    </div>
                 </div>
             </div>
 
