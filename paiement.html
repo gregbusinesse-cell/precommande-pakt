@@ -144,6 +144,14 @@
 
         #card-errors { color: #ff4444; margin-bottom: 1rem; display: none; }
 
+        #paypal-button-container {
+            min-height: 50px;
+        }
+
+        #paypal-button-container iframe {
+            min-height: 50px !important;
+        }
+
         @media (max-width: 1024px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -162,12 +170,6 @@
     <div class="main-container">
         <!-- Colonne gauche: Ce que vous recevrez -->
         <div class="left-column">
-            <div style="background: rgba(212, 175, 55, 0.15); border: 2px solid #D4AF37; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚀</div>
-                <p style="color: #D4AF37; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Accès VIP</p>
-                <p style="color: #FFFFFF99; font-size: 0.9rem;">Rejoins les fondateurs de PAKT avant le lancement officiel</p>
-            </div>
-
             <h2>Ce que vous recevrez</h2>
             <ul>
                 <li>Accès gratuit à l'app à vie</li>
@@ -177,8 +179,13 @@
                 <li>Code promo unique par email</li>
             </ul>
 
-            <div style="background: rgba(68, 255, 68, 0.1); border: 1px solid #44ff44; border-radius: 6px; padding: 0.75rem; margin-top: 2rem; text-align: center; font-size: 0.9rem; color: #44ff44;">
+            <div style="background: rgba(68, 255, 68, 0.1); border: 1px solid #44ff44; border-radius: 6px; padding: 0.75rem; margin-top: 2rem; margin-bottom: 1.5rem; text-align: center; font-size: 0.9rem; color: #44ff44;">
                 🔒 100% sécurisé via Stripe
+            </div>
+
+            <div style="background: rgba(212, 175, 55, 0.15); border: 2px solid #D4AF37; border-radius: 12px; padding: 1.5rem; text-align: center;">
+                <p style="color: #D4AF37; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Accès VIP</p>
+                <p style="color: #FFFFFF99; font-size: 0.9rem;">Rejoins les fondateurs de PAKT avant le lancement officiel</p>
             </div>
         </div>
 
