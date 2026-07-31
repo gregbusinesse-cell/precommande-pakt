@@ -87,6 +87,13 @@
             color: #FFFFFF !important;
         }
 
+        /* Masquer le bouton Préremplir de Stripe */
+        .StripeElement__icon--save,
+        button[aria-label*="save"],
+        button[aria-label*="Save"] {
+            display: none !important;
+        }
+
         .card-fields-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -155,6 +162,12 @@
     <div class="main-container">
         <!-- Colonne gauche: Ce que vous recevrez -->
         <div class="left-column">
+            <div style="background: rgba(212, 175, 55, 0.15); border: 2px solid #D4AF37; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚀</div>
+                <p style="color: #D4AF37; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Accès VIP</p>
+                <p style="color: #FFFFFF99; font-size: 0.9rem;">Rejoins les fondateurs de PAKT avant le lancement officiel</p>
+            </div>
+
             <h2>Ce que vous recevrez</h2>
             <ul>
                 <li>Accès gratuit à l'app à vie</li>
@@ -199,6 +212,10 @@
                     <div class="form-section-title">
                         <div class="step-number">2</div>
                         <h3>Paiement</h3>
+                    </div>
+
+                    <div style="background: rgba(68, 255, 68, 0.1); border: 1px solid #44ff44; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.5rem; text-align: center; font-size: 0.9rem; color: #44ff44;">
+                        🔒 100% sécurisé via Stripe
                     </div>
 
                     <div class="form-group">
@@ -315,7 +332,8 @@
             if (result) {
                 prb.mount('#payment-request-button');
             } else {
-                document.getElementById('payment-request-button').style.display = 'none';
+                // Afficher un message si Google Pay n'est pas disponible
+                document.getElementById('payment-request-button').innerHTML = '<p style="text-align: center; color: #FFFFFF99; font-size: 0.9rem;">Google Pay non disponible</p>';
             }
         });
 
@@ -363,6 +381,15 @@
         if (typeof paypal !== 'undefined') {
             paypal.Buttons({
                 createOrder: async (data, actions) => {
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+
+                    if (!name || !email) {
+                        errorDiv.textContent = 'Prénom et Email requis pour PayPal';
+                        errorDiv.style.display = 'block';
+                        throw new Error('Prénom et Email requis');
+                    }
+
                     return actions.order.create({
                         purchase_units: [{
                             amount: {
@@ -372,9 +399,9 @@
                         }],
                         payer: {
                             name: {
-                                given_name: document.getElementById('name').value || 'Customer'
+                                given_name: name
                             },
-                            email_address: document.getElementById('email').value || ''
+                            email_address: email
                         }
                     });
                 },
