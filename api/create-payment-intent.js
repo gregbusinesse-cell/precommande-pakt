@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ error: 'POST only' });
     }
 
-    const { amount, email, name, paymentMethodType } = req.body;
+    const { amount, email, name, phone, paymentMethodType } = req.body;
 
     if (!amount || !email || !name) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -17,7 +17,8 @@ module.exports = async function handler(req, res) {
             currency: 'eur',
             metadata: {
                 email: email,
-                name: name
+                name: name,
+                phone: phone || ''
             }
         };
 

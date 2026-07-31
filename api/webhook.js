@@ -2,6 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const sgMail = require('@sendgrid/mail');
 const fs = require('fs');
 const path = require('path');
+const { appendToSheet } = require('./append-to-sheet');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
@@ -37,41 +38,46 @@ function generatePromoCode() {
     return code;
 }
 
-async function sendPromoEmail(email, promoCode, name) {
+async function sendNotificationToSupport({ email, name, phone, promoCode, amount, paymentMethod, paymentIntentId }) {
     if (!process.env.SENDGRID_API_KEY) {
         console.log(`
-        ========== PROMO CODE GENERATED (SendGrid not configured) ==========
+        ========== NEW PAYMENT (SendGrid not configured) ==========
         Email: ${email}
         Name: ${name}
+        Phone: ${phone || 'N/A'}
         Promo Code: ${promoCode}
-        ====================================================================
+        =============================================================
         `);
-        return { success: true, message: 'Code logged (email not sent)' };
+        return { success: false, message: 'SendGrid not configured' };
     }
 
     try {
         const msg = {
-            to: email,
+            to: 'paktsupport@gmail.com',
             from: 'paktsupport@gmail.com',
-            subject: 'Bienvenue, Membre Fondateur PAKT !',
+            subject: `Nouveau paiement PAKT - ${name}`,
             html: `
-                <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #FFFFFF; padding: 2rem; border-radius: 12px;">
-                    <h1 style="color: #D4AF37; text-align: center;">Bienvenue !</h1>
-                    <p>Salut ${name}, merci d'être Membre Fondateur PAKT !</p>
-                    <div style="background: #1a1a1a; border: 2px solid #D4AF37; border-radius: 8px; padding: 2rem; text-align: center; margin: 2rem 0;">
-                        <p style="color: #FFFFFF99;">Ton code promo unique :</p>
-                        <p style="font-size: 1.8rem; font-weight: bold; color: #D4AF37; letter-spacing: 2px;">${promoCode}</p>
-                    </div>
-                    <p style="color: #FFFFFF99;">Reste à l'affût ! Tu seras notifié dès que PAKT sort en septembre 2026.</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 2rem;">
+                    <h2>Nouveau Membre Fondateur PAKT</h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="padding: 8px; font-weight: bold;">Prénom</td><td style="padding: 8px;">${name}</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Email</td><td style="padding: 8px;">${email}</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Téléphone</td><td style="padding: 8px;">${phone || 'Non renseigné'}</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Code promo généré</td><td style="padding: 8px; font-size: 1.2rem; color: #D4AF37;">${promoCode}</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Montant</td><td style="padding: 8px;">${amount}€</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Moyen de paiement</td><td style="padding: 8px;">${paymentMethod}</td></tr>
+                        <tr><td style="padding: 8px; font-weight: bold;">Payment Intent ID</td><td style="padding: 8px;">${paymentIntentId}</td></tr>
+                    </table>
+                    <p style="margin-top: 1.5rem; color: #666;">Pense à envoyer un email personnalisé à ${email} avec le code promo sous 24h.</p>
                 </div>
             `
         };
 
         await sgMail.send(msg);
-        console.log(`✅ Email sent successfully to ${email}`);
-        return { success: true, message: `Email sent to ${email}` };
+        console.log(`✅ Notification sent to support for ${email}`);
+        return { success: true };
     } catch (error) {
-        console.error('Email sending error:', error);
+        console.error('Support notification error:', error);
         return { success: false, message: error.message };
     }
 }
@@ -108,6 +114,7 @@ module.exports = async function handler(req, res) {
             const paymentIntent = event.data.object;
             const email = paymentIntent.metadata?.email;
             const name = paymentIntent.metadata?.name;
+            const phone = paymentIntent.metadata?.phone;
 
             if (!email || !name) {
                 console.warn('⚠️ Missing email or name in payment metadata');
@@ -115,27 +122,35 @@ module.exports = async function handler(req, res) {
             }
 
             const promoCode = generatePromoCode();
+            const amount = paymentIntent.amount / 100;
+            const paymentMethod = paymentIntent.payment_method_types?.[0] || 'card';
 
             const codes = loadPromoCodes();
             codes.push({
                 email: email,
                 name: name,
+                phone: phone || '',
                 code: promoCode,
                 paymentIntentId: paymentIntent.id,
-                amount: paymentIntent.amount / 100,
+                amount: amount,
                 createdAt: new Date().toISOString(),
                 used: false,
                 usedAt: null
             });
             savePromoCodes(codes);
 
-            const emailResult = await sendPromoEmail(email, promoCode, name);
+            const notifResult = await sendNotificationToSupport({
+                email, name, phone, promoCode, amount, paymentMethod,
+                paymentIntentId: paymentIntent.id
+            });
 
-            if (emailResult.success) {
-                console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}`);
-            } else {
-                console.warn(`⚠️ Payment succeeded but email failed: ${emailResult.message}`);
-            }
+            const sheetResult = await appendToSheet({
+                email, name, phone, promoCode, amount, paymentMethod,
+                paymentIntentId: paymentIntent.id,
+                emailSent: notifResult.success
+            });
+
+            console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}. Notification: ${notifResult.success}. Sheet: ${sheetResult.success}`);
         }
 
         res.status(200).json({ received: true });

@@ -476,6 +476,7 @@
 
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
 
             if (!email || !name) {
                 errorDiv.textContent = 'Prénom et Email requis';
@@ -495,7 +496,8 @@
                     body: JSON.stringify({
                         amount: 2000,
                         email: email,
-                        name: name
+                        name: name,
+                        phone: phone
                     })
                 });
 

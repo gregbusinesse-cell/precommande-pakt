@@ -1,0 +1,10 @@
+{
+  "name": "pakt-precommande",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "stripe": "^17.0.0",
+    "@sendgrid/mail": "^8.1.3",
+    "googleapis": "^144.0.0"
+  }
+}
