@@ -140,10 +140,33 @@
             <div class="payment-card">
                 <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Moyens de paiement</h2>
 
-                <div id="card-element" class="stripe-element"></div>
+                <!-- Numéro de carte -->
+                <div class="form-group">
+                    <label>Numéro de carte</label>
+                    <div id="card-number" class="stripe-element"></div>
+                </div>
+
+                <!-- CVC et Expiration côte à côte -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Code CVC</label>
+                        <div id="card-expiry" class="stripe-element"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Date d'expiration</label>
+                        <div id="card-cvc" class="stripe-element"></div>
+                    </div>
+                </div>
+
                 <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem; display: none;"></div>
 
                 <button type="submit" class="button" id="submit-button">Payer 20€</button>
+
+                <!-- Autres moyens de paiement -->
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333333;">
+                    <p style="color: #FFFFFF99; font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">Ou payer avec</p>
+                    <div id="payment-request-button"></div>
+                </div>
             </div>
 
             <div class="loading" id="loading">
@@ -170,8 +193,16 @@
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
         const elements = stripe.elements();
-        const cardElement = elements.create('card', { hidePostalCode: true });
-        cardElement.mount('#card-element');
+
+        // Créer 3 éléments Stripe séparés
+        const cardNumber = elements.create('cardNumber');
+        const cardExpiry = elements.create('cardExpiry');
+        const cardCvc = elements.create('cardCvc');
+
+        // Monter les éléments
+        cardNumber.mount('#card-number');
+        cardExpiry.mount('#card-expiry');
+        cardCvc.mount('#card-cvc');
 
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
@@ -180,14 +211,16 @@
         const loadingDiv = document.getElementById('loading');
         const cardErrors = document.getElementById('card-errors');
 
-        // Gestion des erreurs carte
-        cardElement.addEventListener('change', (event) => {
-            if (event.error) {
-                cardErrors.textContent = event.error.message;
-                cardErrors.style.display = 'block';
-            } else {
-                cardErrors.style.display = 'none';
-            }
+        // Gestion des erreurs
+        [cardNumber, cardExpiry, cardCvc].forEach(element => {
+            element.addEventListener('change', (event) => {
+                if (event.error) {
+                    cardErrors.textContent = event.error.message;
+                    cardErrors.style.display = 'block';
+                } else {
+                    cardErrors.style.display = 'none';
+                }
+            });
         });
 
         // Soumission du formulaire
@@ -225,10 +258,10 @@
                     throw new Error(data.error || 'Erreur serveur');
                 }
 
-                // Confirme le paiement avec confirmCardPayment
+                // Confirme le paiement avec les 3 éléments séparés
                 const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
                     payment_method: {
-                        card: cardElement,
+                        card: cardNumber,
                         billing_details: {
                             name: name,
                             email: email
@@ -240,8 +273,8 @@
                 submitButton.disabled = false;
 
                 if (error) {
-                    errorDiv.textContent = `Erreur: ${error.message}`;
-                    errorDiv.style.display = 'block';
+                    cardErrors.textContent = error.message;
+                    cardErrors.style.display = 'block';
                 } else if (paymentIntent.status === 'succeeded') {
                     successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
                     successDiv.style.display = 'block';
@@ -249,66 +282,15 @@
                     setTimeout(() => {
                         window.location.href = '/merci.html';
                     }, 3000);
-                } else if (paymentIntent && (paymentIntent.status === 'processing' || paymentIntent.status === 'requires_payment_method')) {
-                    errorDiv.textContent = 'Paiement en cours de traitement. Veuillez patienter...';
-                    errorDiv.style.display = 'block';
                 }
             } catch (err) {
                 console.error('Error:', err);
-                errorDiv.textContent = `Erreur: ${err.message}`;
-                errorDiv.style.display = 'block';
+                cardErrors.textContent = err.message;
+                cardErrors.style.display = 'block';
                 loadingDiv.style.display = 'none';
                 submitButton.disabled = false;
             }
         });
-
-        // Initialiser Payment Element au chargement avec un client secret placeholder
-        (async () => {
-            try {
-                // Créer un Payment Intent initial pour obtenir le client secret
-                const email = document.getElementById('email');
-                const name = document.getElementById('name');
-
-                // Attendre que l'utilisateur remplisse son email avant de créer le PI
-                const initPaymentElement = async () => {
-                    if (email.value && name.value) {
-                        const response = await fetch('/api/create-payment-intent', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                amount: 2000,
-                                email: email.value,
-                                name: name.value
-                            })
-                        });
-
-                        const data = await response.json();
-                        if (!response.ok) {
-                            console.error('Failed to create payment intent:', data.error);
-                            return;
-                        }
-
-                        clientSecret = data.clientSecret;
-
-                        if (!paymentElement) {
-                            paymentElement = elements.create('payment', {
-                                clientSecret: clientSecret,
-                                business: {
-                                    name: 'PAKT'
-                                }
-                            });
-                            paymentElement.mount('#payment-element');
-                        }
-                    }
-                };
-
-                // Initialiser quand l'email est rempli
-                email.addEventListener('blur', initPaymentElement);
-                name.addEventListener('blur', initPaymentElement);
-            } catch (err) {
-                console.error('Initialization error:', err);
-            }
-        })();
     </script>
 </body>
 </html>
