@@ -6,6 +6,15 @@ const { appendToSheet } = require('./append-to-sheet');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
+function getRawBody(req) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        req.on('data', (chunk) => chunks.push(chunk));
+        req.on('end', () => resolve(Buffer.concat(chunks)));
+        req.on('error', reject);
+    });
+}
+
 const PROMO_FILE = path.join(process.cwd(), 'promo-codes.json');
 
 function loadPromoCodes() {
@@ -82,24 +91,24 @@ async function sendNotificationToSupport({ email, name, phone, promoCode, amount
     }
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(400).json({ error: 'POST only' });
     }
 
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const rawBody = await getRawBody(req);
 
     let event;
 
     if (!endpointSecret) {
         console.warn('⚠️ STRIPE_WEBHOOK_SECRET not configured. Webhook validation skipped.');
-        // In development without webhook secret, just parse the body
-        event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+        event = JSON.parse(rawBody.toString());
     } else {
         try {
             event = stripe.webhooks.constructEvent(
-                req.body,
+                rawBody,
                 sig,
                 endpointSecret
             );
@@ -157,5 +166,14 @@ module.exports = async function handler(req, res) {
     } catch (error) {
         console.error('Webhook error:', error);
         res.status(500).json({ error: error.message });
+    }
+}
+
+module.exports = handler;
+
+// Stripe requires the raw request body to verify the webhook signature
+module.exports.config = {
+    api: {
+        bodyParser: false
     }
 };
