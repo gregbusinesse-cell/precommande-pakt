@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAKT — Tinder du business. Trouve tes co-fondateurs.</title>
     <meta name="description" content="PAKT : L'app qui te connecte avec des entrepreneurs pour lancer ensemble. Swipe, matche, lance ton projet. Disponible sur iOS et Android.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0a' width='100' height='100'/><text x='50' y='70' font-size='80' font-weight='bold' text-anchor='middle' fill='%23D4AF37' font-family='Arial'>P</text></svg>" type="image/svg+xml">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -731,12 +732,12 @@
     <!-- STATS / PROJECTION -->
     <section class="stats">
         <div class="stat">
-            <div class="stat-number">Moins d'1 semaine</div>
+            <div class="stat-number">1 semaine max</div>
             <div class="stat-label">Pour ton premier match</div>
         </div>
         <div class="stat">
             <div class="stat-number">2-4</div>
-            <div class="stat-label">Partenaires ou associés identifiés</div>
+            <div class="stat-label">Partenaires ou associés</div>
         </div>
         <div class="stat">
             <div class="stat-number">Illimité</div>
@@ -868,9 +869,9 @@
         <p style="text-align: center; color: var(--text-secondary); margin-top: 1.5rem; font-weight: 500;">Paiement sécurisé Stripe · Disponible immédiatement</p>
 
         <div class="cta-section" style="max-width: 700px; margin: 3rem auto;">
-            <h3 style="margin-bottom: 1rem; font-weight: 800;">Pourquoi 5€ si ça vaudra 20€/mois ?</h3>
+            <h3 style="margin-bottom: 1rem; font-weight: 800;">Pourquoi une précommande ?</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; font-weight: 500;">
-                <strong>Tu nous fais confiance avant la sortie.</strong> Tu crois au projet. Tu nous aides à valider la demande. À la sortie, les prix quadrupleront (jusqu'à 80€/mois). Toi, tu gardes ton tarif de précommande. Pour toujours. C'est l'avantage des premiers.
+                <strong>Pour construire une vraie communauté dès le départ.</strong> PAKT fonctionne quand il y a des gens. Les premières personnes sont essentielles. Elles créent la dynamique, les matches, les lancements. Tu aides à poser la fondation. Et oui, les tarifs augmenteront après, c'est normal pour une app réelle. Toi, tu gardes ton prix de précommande. À vie.
             </p>
         </div>
     </section>
@@ -882,11 +883,11 @@
         <div class="features-grid">
             <div class="feature-card" style="background: #1a1a1a;">
                 <h3 style="color: var(--accent);">Zéro algorithme. Égalité totale.</h3>
-                <p>On n'est pas des escrocs. Tout le monde a payé. Tout le monde a la même chance. Pas de trucage, pas de profils privilégiés. Tu paies, tu as accès à tous les profils. C'est ça.</p>
+                <p>Tout le monde a la même chance. Pas de trucage, pas de profils privilégiés. Tu paies, tu as accès à tous les profils. C'est ça.</p>
             </div>
 
             <div class="feature-card" style="background: #1a1a1a;">
-                <h3 style="color: var(--accent);">Filtres intelligents, pas d'algo</h3>
+                <h3 style="color: var(--accent);">Filtres intelligents</h3>
                 <p>Tu cherches quelqu'un de ton âge, de ta région, avec les compétences X ? Les filtres font juste ça. Pas de dark patterns. Pas de manipulation. Juste les bonnes personnes.</p>
             </div>
 
@@ -966,10 +967,10 @@
         </div>
 
         <div class="footer-links">
-            <a href="#conditions">CGU</a>
-            <a href="#conditions">Politique de confidentialité</a>
-            <a href="#conditions">Mentions légales</a>
-            <a href="mailto:contact@pakt.app">Contact</a>
+            <a href="/cgu.html">CGU</a>
+            <a href="/confidentialite.html">Politique de confidentialité</a>
+            <a href="/mentions-legales.html">Mentions légales</a>
+            <a href="/contact.html">Contact</a>
         </div>
 
         <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">© 2026 PAKT · Tinder du business. Trouve tes co-fondateurs.</p>
@@ -981,12 +982,17 @@
             question.addEventListener('click', function() {
                 const answer = this.nextElementSibling;
                 const toggle = this.querySelector('.faq-toggle');
+                const isActive = answer.classList.contains('active');
 
-                document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('active'));
-                document.querySelectorAll('.faq-toggle').forEach(t => t.classList.remove('active'));
-
-                answer.classList.add('active');
-                toggle.classList.add('active');
+                if (isActive) {
+                    answer.classList.remove('active');
+                    toggle.classList.remove('active');
+                } else {
+                    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('active'));
+                    document.querySelectorAll('.faq-toggle').forEach(t => t.classList.remove('active'));
+                    answer.classList.add('active');
+                    toggle.classList.add('active');
+                }
             });
         });
 

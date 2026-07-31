@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - PAKT</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0a' width='100' height='100'/><text x='50' y='70' font-size='80' font-weight='bold' text-anchor='middle' fill='%23D4AF37' font-family='Arial'>P</text></svg>" type="image/svg+xml">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #FFFFFF; background: #0a0a0a; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(10, 10, 10, 0.95); border-bottom: 1px solid #333333; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 800; font-size: 1.5rem; color: #FFFFFF; text-decoration: none; }
+        nav a { color: #FFFFFF; text-decoration: none; margin-left: 2rem; }
+        nav a:hover { color: #D4AF37; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1 { font-size: 2.5rem; margin: 2rem 0 1rem; color: #D4AF37; }
+        .contact-info { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
+        .contact-item { background: #1a1a1a; padding: 2rem; border-radius: 12px; border: 1px solid #333333; }
+        .contact-item h2 { font-size: 1.3rem; margin-bottom: 1rem; color: #D4AF37; }
+        .contact-item p { color: #FFFFFF99; margin: 0.5rem 0; }
+        .contact-item a { color: #D4AF37; text-decoration: none; }
+        .contact-item a:hover { text-decoration: underline; }
+        footer { text-align: center; padding: 2rem; color: #FFFFFF99; border-top: 1px solid #333333; margin-top: 4rem; }
+        @media (max-width: 768px) { .contact-info { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">PAKT</a>
+        <a href="/">Retour</a>
+    </nav>
+
+    <div class="container">
+        <h1>Nous Contacter</h1>
+        <p style="font-size: 1.1rem; color: #FFFFFF99; margin-bottom: 2rem;">Une question ? Un problème ? Contactez-nous par email ou téléphone.</p>
+
+        <div class="contact-info">
+            <div class="contact-item">
+                <h2>Email</h2>
+                <p><a href="mailto:paktsupport@gmail.com">paktsupport@gmail.com</a></p>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">Réponse sous 24-48h</p>
+            </div>
+
+            <div class="contact-item">
+                <h2>Téléphone</h2>
+                <p><a href="tel:+33621838188">06 21 83 81 88</a></p>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">Du lundi au vendredi, 9h-18h</p>
+            </div>
+
+            <div class="contact-item">
+                <h2>Adresse</h2>
+                <p>VELURA<br>229 Rue Saint-Honoré<br>75001 Paris<br>France</p>
+            </div>
+
+            <div class="contact-item">
+                <h2>En ligne</h2>
+                <p>Vous pouvez également nous contacter directement via l'application PAKT.</p>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">Support 24/7</p>
+            </div>
+        </div>
+
+        <div style="background: #1a1a1a; padding: 2rem; border-radius: 12px; border: 1px solid #333333; margin-top: 3rem;">
+            <h2 style="color: #D4AF37; margin-bottom: 1rem;">Modération et Signalement</h2>
+            <p style="color: #FFFFFF99;">Si vous avez repéré une fraude, une arnaque ou un contenu inapproprié, signalez-le immédiatement à <strong>paktsupport@gmail.com</strong> avec les détails pertinents. Notre équipe intervient dans les 24 heures.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 PAKT. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
