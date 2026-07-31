@@ -2,7 +2,7 @@ const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(400).json({ error: 'POST only' });
     }
@@ -36,9 +36,10 @@ export default async function handler(req, res) {
         };
 
         await sgMail.send(msg);
+        console.log(`✅ Email sent successfully to ${email}`);
         res.status(200).json({ success: true, message: `Email sent to ${email}` });
     } catch (error) {
         console.error('Email sending error:', error);
         res.status(500).json({ error: error.message });
     }
-}
+};

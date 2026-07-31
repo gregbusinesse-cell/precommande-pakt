@@ -1,6 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(400).json({ error: 'POST only' });
     }
@@ -18,8 +18,13 @@ export default async function handler(req, res) {
             metadata: {
                 email: email,
                 name: name
+            },
+            automatic_payment_methods: {
+                enabled: true
             }
         });
+
+        console.log(`✅ Payment Intent created: ${paymentIntent.id} for ${email}`);
 
         res.status(200).json({
             clientSecret: paymentIntent.client_secret
@@ -28,4 +33,4 @@ export default async function handler(req, res) {
         console.error('Stripe error:', error);
         res.status(500).json({ error: error.message });
     }
-}
+};

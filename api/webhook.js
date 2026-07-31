@@ -68,6 +68,7 @@ async function sendPromoEmail(email, promoCode, name) {
         };
 
         await sgMail.send(msg);
+        console.log(`✅ Email sent successfully to ${email}`);
         return { success: true, message: `Email sent to ${email}` };
     } catch (error) {
         console.error('Email sending error:', error);
@@ -75,17 +76,21 @@ async function sendPromoEmail(email, promoCode, name) {
     }
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(400).json({ error: 'POST only' });
     }
 
     const sig = req.headers['stripe-signature'];
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_';
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     let event;
 
-    if (endpointSecret && endpointSecret !== 'whsec_test_') {
+    if (!endpointSecret) {
+        console.warn('⚠️ STRIPE_WEBHOOK_SECRET not configured. Webhook validation skipped.');
+        // In development without webhook secret, just parse the body
+        event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } else {
         try {
             event = stripe.webhooks.constructEvent(
                 req.body,
@@ -93,18 +98,21 @@ export default async function handler(req, res) {
                 endpointSecret
             );
         } catch (err) {
-            console.log(`⚠️ Webhook signature verification failed.`, err.message);
+            console.error(`⚠️ Webhook signature verification failed: ${err.message}`);
             return res.status(400).send(`Webhook Error: ${err.message}`);
         }
-    } else {
-        event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     }
 
     try {
         if (event.type === 'payment_intent.succeeded') {
             const paymentIntent = event.data.object;
-            const email = paymentIntent.metadata.email;
-            const name = paymentIntent.metadata.name;
+            const email = paymentIntent.metadata?.email;
+            const name = paymentIntent.metadata?.name;
+
+            if (!email || !name) {
+                console.warn('⚠️ Missing email or name in payment metadata');
+                return res.status(400).json({ error: 'Missing email or name in metadata' });
+            }
 
             const promoCode = generatePromoCode();
 
@@ -121,9 +129,13 @@ export default async function handler(req, res) {
             });
             savePromoCodes(codes);
 
-            await sendPromoEmail(email, promoCode, name);
+            const emailResult = await sendPromoEmail(email, promoCode, name);
 
-            console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}`);
+            if (emailResult.success) {
+                console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}`);
+            } else {
+                console.warn(`⚠️ Payment succeeded but email failed: ${emailResult.message}`);
+            }
         }
 
         res.status(200).json({ received: true });
@@ -131,4 +143,4 @@ export default async function handler(req, res) {
         console.error('Webhook error:', error);
         res.status(500).json({ error: error.message });
     }
-}
+};

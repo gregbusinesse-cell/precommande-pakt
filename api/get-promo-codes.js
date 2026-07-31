@@ -4,7 +4,7 @@ const path = require('path');
 const PROMO_FILE = path.join(process.cwd(), 'promo-codes.json');
 const PROMO_SECRET_KEY = process.env.PROMO_SECRET_KEY || 'admin123';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(400).json({ error: 'GET only' });
     }
@@ -37,4 +37,4 @@ export default async function handler(req, res) {
         console.error('Error reading promo codes:', error);
         res.status(500).json({ error: error.message });
     }
-}
+};

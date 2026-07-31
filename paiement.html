@@ -78,6 +78,30 @@
 
         .stripe-element { padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; }
 
+        #payment-element { padding: 1rem 0; }
+
+        .payment-methods-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .payment-methods-divider::before,
+        .payment-methods-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #333333;
+        }
+
+        .payment-methods-divider span {
+            color: #FFFFFF99;
+            font-size: 0.9rem;
+        }
+
+        .payment-request-button { margin-top: 1rem; }
+
         .loading { display: none; text-align: center; }
         .spinner { border: 3px solid #333333; border-top: 3px solid #D4AF37; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 1rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -140,8 +164,8 @@
             <div class="payment-card">
                 <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations de paiement</h2>
 
-                <!-- Stripe Card Element sera inséré ici -->
-                <div id="card-element" class="stripe-element"></div>
+                <!-- Stripe Payment Element avec support Google Pay, Apple Pay, PayPal, Link -->
+                <div id="payment-element"></div>
                 <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem;"></div>
 
                 <button type="submit" class="button" id="submit-button">Payer 20€</button>
@@ -171,8 +195,7 @@
     <script>
         const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
         const elements = stripe.elements();
-        const cardElement = elements.create('card', { hidePostalCode: true });
-        cardElement.mount('#card-element');
+        let paymentElement;
 
         const form = document.getElementById('payment-form');
         const submitButton = document.getElementById('submit-button');
@@ -180,15 +203,8 @@
         const successDiv = document.getElementById('success-message');
         const loadingDiv = document.getElementById('loading');
 
-        // Gestion des erreurs de saisie
-        cardElement.addEventListener('change', (event) => {
-            if (event.error) {
-                errorDiv.textContent = event.error.message;
-                errorDiv.style.display = 'block';
-            } else {
-                errorDiv.style.display = 'none';
-            }
-        });
+        // Initialiser Payment Element une fois que le client secret est disponible
+        let clientSecret = null;
 
         // Soumission du formulaire
         form.addEventListener('submit', async (e) => {
@@ -202,45 +218,126 @@
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
 
-            // Crée le Payment Intent côté serveur
-            const response = await fetch('/api/create-payment-intent', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: 2000,
-                    email: email,
-                    name: name
-                })
-            });
+            try {
+                // Crée le Payment Intent côté serveur
+                const response = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 2000,
+                        email: email,
+                        name: name
+                    })
+                });
 
-            const { clientSecret } = await response.json();
-
-            // Confirme le paiement
-            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: name,
-                        email: email
-                    }
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create payment intent');
                 }
-            });
 
-            loadingDiv.style.display = 'none';
-            submitButton.disabled = false;
+                clientSecret = data.clientSecret;
 
-            if (error) {
-                errorDiv.textContent = `Erreur de paiement: ${error.message}`;
+                // Initialiser Payment Element si ce n'est pas déjà fait
+                if (!paymentElement) {
+                    paymentElement = elements.create('payment', {
+                        clientSecret: clientSecret,
+                        business: {
+                            name: 'PAKT'
+                        }
+                    });
+                    paymentElement.mount('#payment-element');
+                }
+
+                // Confirmer le paiement
+                const { error, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    clientSecret: clientSecret,
+                    confirmParams: {
+                        return_url: `${window.location.origin}/merci.html`,
+                        payment_method_data: {
+                            billing_details: {
+                                name: name,
+                                email: email
+                            }
+                        }
+                    },
+                    redirect: 'if_required'
+                });
+
+                loadingDiv.style.display = 'none';
+                submitButton.disabled = false;
+
+                if (error) {
+                    errorDiv.textContent = `Erreur de paiement: ${error.message}`;
+                    errorDiv.style.display = 'block';
+                    console.error('Payment error:', error);
+                } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
+                    successDiv.style.display = 'block';
+                    form.style.display = 'none';
+                    setTimeout(() => {
+                        window.location.href = '/merci.html';
+                    }, 3000);
+                } else if (paymentIntent && (paymentIntent.status === 'processing' || paymentIntent.status === 'requires_payment_method')) {
+                    errorDiv.textContent = 'Paiement en cours de traitement. Veuillez patienter...';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                errorDiv.textContent = `Erreur: ${err.message}`;
                 errorDiv.style.display = 'block';
-            } else if (paymentIntent.status === 'succeeded') {
-                successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
-                successDiv.style.display = 'block';
-                form.style.display = 'none';
-                setTimeout(() => {
-                    window.location.href = '/merci.html';
-                }, 3000);
+                loadingDiv.style.display = 'none';
+                submitButton.disabled = false;
             }
         });
+
+        // Initialiser Payment Element au chargement avec un client secret placeholder
+        (async () => {
+            try {
+                // Créer un Payment Intent initial pour obtenir le client secret
+                const email = document.getElementById('email');
+                const name = document.getElementById('name');
+
+                // Attendre que l'utilisateur remplisse son email avant de créer le PI
+                const initPaymentElement = async () => {
+                    if (email.value && name.value) {
+                        const response = await fetch('/api/create-payment-intent', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: 2000,
+                                email: email.value,
+                                name: name.value
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (!response.ok) {
+                            console.error('Failed to create payment intent:', data.error);
+                            return;
+                        }
+
+                        clientSecret = data.clientSecret;
+
+                        if (!paymentElement) {
+                            paymentElement = elements.create('payment', {
+                                clientSecret: clientSecret,
+                                business: {
+                                    name: 'PAKT'
+                                }
+                            });
+                            paymentElement.mount('#payment-element');
+                        }
+                    }
+                };
+
+                // Initialiser quand l'email est rempli
+                email.addEventListener('blur', initPaymentElement);
+                name.addEventListener('blur', initPaymentElement);
+            } catch (err) {
+                console.error('Initialization error:', err);
+            }
+        })();
     </script>
 </body>
 </html>
