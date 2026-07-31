@@ -728,7 +728,6 @@
             Swipe, matche avec les bons entrepreneurs, lance ensemble. Une communauté de 50+ personnes qui cherchent juste ça : quelqu'un pour démarrer.
         </p>
         <button class="cta-button">Devenir membre fondateur — 20€ à vie</button>
-        <div class="price-tag">Accès à vie contre 20€/mois à la sortie.</div>
         <p class="urgency">L'app sort dans les prochains jours sur iOS & Android.</p>
     </section>
 
@@ -990,8 +989,8 @@
         document.querySelectorAll('.cta-button').forEach(button => {
             button.addEventListener('click', function(e) {
                 if (button.textContent.includes('Précommander') || button.textContent.includes('Devenir')) {
-                    // Redirect to payment page (Stripe/Paddle)
-                    window.location.href = 'https://www.paceappstore.com/precommande-pakt'; // À remplacer par ton lien réel
+                    // Redirect to payment page
+                    window.location.href = '/paiement.html';
                 }
             });
         });

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - PAKT</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0a' width='100' height='100'/><text x='50' y='70' font-size='80' font-weight='bold' text-anchor='middle' fill='%23D4AF37' font-family='Arial'>P</text></svg>" type="image/svg+xml">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #FFFFFF; line-height: 1.6; }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: #FFFFFF; text-decoration: none; }
+        nav a { color: #FFFFFF; text-decoration: none; margin-left: 2rem; }
+        nav a:hover { color: #D4AF37; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 4rem 2rem; }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #D4AF37; }
+        .subtitle { color: #FFFFFF99; font-size: 1.1rem; margin-bottom: 3rem; }
+
+        .payment-card { background: #1a1a1a; border: 1px solid #333333; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+
+        .price-summary { display: flex; justify-content: space-between; margin-bottom: 2rem; padding: 1.5rem; background: #0f0f0f; border-radius: 8px; }
+        .price-summary strong { font-size: 1.3rem; color: #D4AF37; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; color: #FFFFFF; font-size: 1rem; }
+        input:focus, select:focus { outline: none; border-color: #D4AF37; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .button {
+            width: 100%;
+            padding: 1rem;
+            background: #D4AF37;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .button:hover { background: #E8C547; transform: translateY(-2px); }
+        .button:disabled { background: #666; cursor: not-allowed; transform: none; }
+
+        .info-box { background: rgba(212, 175, 55, 0.1); border-left: 4px solid #D4AF37; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem; }
+        .info-box p { color: #FFFFFF99; font-size: 0.95rem; }
+
+        .benefits {
+            background: #0f0f0f;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .benefits h3 { margin-bottom: 1rem; color: #D4AF37; }
+        .benefits ul { margin-left: 1.5rem; }
+        .benefits li { margin-bottom: 0.8rem; color: #FFFFFF99; }
+
+        .stripe-element { padding: 0.75rem; border: 1px solid #333333; border-radius: 6px; background: #0f0f0f; }
+
+        .loading { display: none; text-align: center; }
+        .spinner { border: 3px solid #333333; border-top: 3px solid #D4AF37; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 1rem auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .error { color: #ff4444; background: rgba(255, 68, 68, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; display: none; }
+        .success { color: #44ff44; background: rgba(68, 255, 68, 0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; display: none; }
+
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">PAKT</a>
+        <a href="/">Retour</a>
+    </nav>
+
+    <div class="container">
+        <h1>Devenir Membre Fondateur</h1>
+        <p class="subtitle">Accès à vie. Avant-première. Badge spécial.</p>
+
+        <div class="price-summary">
+            <span>Tarif Fondateur</span>
+            <strong>20€</strong>
+        </div>
+
+        <div class="info-box">
+            <p>✓ Accès gratuit à l'app à vie<br>
+            ✓ Badge Fondateur visible<br>
+            ✓ Avant-première à la sortie (septembre 2026)<br>
+            ✓ Jamais de frais récurrents</p>
+        </div>
+
+        <form id="payment-form">
+            <div class="error" id="error-message"></div>
+            <div class="success" id="success-message"></div>
+
+            <div class="payment-card">
+                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations personnelles</h2>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="ton@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Nom complet</label>
+                    <input type="text" id="name" name="name" placeholder="Prénom Nom" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Pays</label>
+                        <input type="text" id="country" name="country" placeholder="France" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postal">Code postal</label>
+                        <input type="text" id="postal" name="postal" placeholder="75001" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-card">
+                <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations de paiement</h2>
+
+                <!-- Stripe Card Element sera inséré ici -->
+                <div id="card-element" class="stripe-element"></div>
+                <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem;"></div>
+
+                <button type="submit" class="button" id="submit-button">Payer 20€</button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Traitement du paiement...</p>
+            </div>
+        </form>
+
+        <div class="benefits">
+            <h3>Après le paiement</h3>
+            <ol style="margin-left: 1.5rem; color: #FFFFFF99;">
+                <li>Tu reçois un email avec ton code promo App Store</li>
+                <li>Tu télécharges PAKT gratuitement sur l'App Store/Google Play</li>
+                <li>Entre le code → L'app se télécharge GRATUITEMENT</li>
+                <li>Crée ton profil avec le badge Fondateur</li>
+                <li>Commence à matcher avec d'autres entrepreneurs !</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script>
+        // REMPLACE CES CLÉS PAR TES VRAIES CLÉS STRIPE
+        const stripe = Stripe('pk_live_YOUR_PUBLISHABLE_KEY'); // À remplacer
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const errorDiv = document.getElementById('error-message');
+        const successDiv = document.getElementById('success-message');
+        const loadingDiv = document.getElementById('loading');
+
+        // Gestion des erreurs de saisie
+        cardElement.addEventListener('change', (event) => {
+            if (event.error) {
+                errorDiv.textContent = event.error.message;
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        });
+
+        // Soumission du formulaire
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            submitButton.disabled = true;
+            loadingDiv.style.display = 'block';
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const country = document.getElementById('country').value;
+            const postal = document.getElementById('postal').value;
+
+            // Crée le Payment Intent côté serveur
+            // (Tu dois avoir un backend pour ça)
+            const response = await fetch('/create-payment-intent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: 2000, // 20€ en centimes
+                    email: email,
+                    name: name,
+                    country: country,
+                    postal: postal
+                })
+            });
+
+            const { clientSecret } = await response.json();
+
+            // Confirme le paiement
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: name,
+                        email: email,
+                        address: {
+                            country: country,
+                            postal_code: postal
+                        }
+                    }
+                }
+            });
+
+            loadingDiv.style.display = 'none';
+            submitButton.disabled = false;
+
+            if (error) {
+                errorDiv.textContent = `Erreur de paiement: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } else if (paymentIntent.status === 'succeeded') {
+                successDiv.innerHTML = `✓ Paiement réussi !<br>Tu vas recevoir ton code promo par email sous peu.`;
+                successDiv.style.display = 'block';
+                form.style.display = 'none';
+                // Redirection après 3 secondes
+                setTimeout(() => {
+                    window.location.href = '/merci';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
