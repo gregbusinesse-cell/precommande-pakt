@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merci ! - PAKT</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0a' width='100' height='100'/><text x='50' y='70' font-size='80' font-weight='bold' text-anchor='middle' fill='%23D4AF37' font-family='Arial'>P</text></svg>" type="image/svg+xml">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #FFFFFF; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: #FFFFFF; text-decoration: none; }
+        nav a { color: #FFFFFF; text-decoration: none; margin-left: 2rem; }
+        nav a:hover { color: #D4AF37; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 4rem 2rem; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        .checkmark {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #D4AF37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 60px;
+            color: #D4AF37;
+        }
+
+        h1 { font-size: 2.8rem; margin-bottom: 1rem; color: #D4AF37; font-weight: 800; }
+        .subtitle { font-size: 1.2rem; color: #FFFFFF99; margin-bottom: 3rem; }
+
+        .benefits {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .benefits h3 {
+            color: #D4AF37;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .benefits ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .benefits li {
+            padding: 1rem 0;
+            border-bottom: 1px solid #333333;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .benefits li:last-child {
+            border-bottom: none;
+        }
+
+        .benefits li::before {
+            content: "✓";
+            color: #D4AF37;
+            font-weight: 800;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .benefits li strong {
+            color: #D4AF37;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .benefits li span {
+            color: #FFFFFF99;
+            font-size: 0.95rem;
+        }
+
+        .email-info {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid #D4AF37;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 2rem 0;
+        }
+
+        .email-info p {
+            color: #FFFFFF99;
+            margin: 0.5rem 0;
+        }
+
+        .email-info strong {
+            color: #FFFFFF;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #D4AF37;
+            color: #0a0a0a;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .cta-button:hover {
+            background: #E8C547;
+            transform: translateY(-2px);
+        }
+
+        .contact {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #333333;
+            color: #FFFFFF99;
+            font-size: 0.95rem;
+        }
+
+        .contact a {
+            color: #D4AF37;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+            h1 { font-size: 2rem; }
+            .checkmark { width: 80px; height: 80px; font-size: 40px; }
+            .benefits { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">PAKT</a>
+        <a href="/">Retour à l'accueil</a>
+    </nav>
+
+    <div class="container">
+        <div class="checkmark">✓</div>
+        <h1>Paiement Réussi !</h1>
+        <p class="subtitle">Bienvenue dans la communauté des Membres Fondateurs PAKT</p>
+
+        <div class="email-info">
+            <p><strong>📧 Vérifie ta boîte email</strong></p>
+            <p>Un email contenant ton <strong>code promo unique</strong> a été envoyé à l'adresse que tu as fournie.</p>
+            <p style="margin-top: 1rem; color: #FFFFFF99; font-size: 0.85rem;">Pense à vérifier les spams si tu ne le vois pas immédiatement.</p>
+        </div>
+
+        <div class="benefits">
+            <h3>Qu'est-ce que tu as maintenant ?</h3>
+            <ul>
+                <li>
+                    <strong>Accès à l'app à vie</strong>
+                    <span>Jamais de frais d'abonnement. Ton accès est permanent.</span>
+                </li>
+                <li>
+                    <strong>Badge Fondateur</strong>
+                    <span>Un badge spécial qui montre que tu as cru en PAKT dès le départ.</span>
+                </li>
+                <li>
+                    <strong>Avant-première en septembre 2026</strong>
+                    <span>Tu seras parmi les premiers à accéder à PAKT quand elle sort.</span>
+                </li>
+                <li>
+                    <strong>Code promo unique</strong>
+                    <span>À utiliser sur l'App Store pour télécharger gratuitement.</span>
+                </li>
+                <li>
+                    <strong>Notifications en priorité</strong>
+                    <span>Sois informé immédiatement des mises à jour et nouvelles fonctionnalités.</span>
+                </li>
+            </ul>
+        </div>
+
+        <div style="background: #1a1a1a; border: 1px solid #333333; border-radius: 12px; padding: 2rem; margin: 2rem 0;">
+            <h3 style="color: #D4AF37; margin-bottom: 1.5rem;">Prochaines étapes</h3>
+            <ol style="list-style: decimal; margin-left: 1.5rem; color: #FFFFFF99; text-align: left;">
+                <li>Ouvre l'email que tu viens de recevoir</li>
+                <li>Copie ton code promo unique</li>
+                <li>Reste à l'affût en septembre 2026 pour le lancement</li>
+                <li>Dès que l'app sort, tu recevras une notification</li>
+                <li>Va sur l'App Store (iOS) ou Google Play (Android)</li>
+                <li>Cherche "PAKT"</li>
+                <li>Utilise ton code promo pour télécharger gratuitement</li>
+                <li>Crée ton profil avec ton badge Fondateur</li>
+                <li>Commence à matcher avec d'autres entrepreneurs !</li>
+            </ol>
+        </div>
+
+        <div class="contact">
+            <p>Des questions ? 📧 <a href="mailto:paktsupport@gmail.com">paktsupport@gmail.com</a></p>
+            <p style="margin-top: 1rem;">Ou <a href="/">retourne à l'accueil</a></p>
+        </div>
+    </div>
+</body>
+</html>
