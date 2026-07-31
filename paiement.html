@@ -137,12 +137,33 @@
             <div class="payment-card">
                 <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Moyens de paiement</h2>
 
-                <div id="payment-request-button" style="margin-bottom: 1.5rem;"></div>
+                <!-- Carte bancaire -->
+                <div class="form-group">
+                    <label>Numéro de carte</label>
+                    <div id="card-element" class="stripe-element"></div>
+                </div>
 
-                <div id="card-element" class="stripe-element"></div>
-                <div id="card-errors" style="color: #ff4444; margin-top: 0.5rem; display: none;"></div>
+                <!-- Date expiration et Code sécurité côte à côte -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Date d'expiration</label>
+                        <div id="card-expiry-placeholder" class="stripe-element" style="min-height: 40px;"></div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Code de sécurité</label>
+                        <div id="card-cvc-placeholder" class="stripe-element" style="min-height: 40px;"></div>
+                    </div>
+                </div>
+
+                <div id="card-errors" style="color: #ff4444; margin-bottom: 1rem; display: none;"></div>
 
                 <button type="submit" class="button" id="submit-button">Payer 20€</button>
+
+                <!-- Autres moyens de paiement EN DESSOUS -->
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333333;">
+                    <p style="color: #FFFFFF99; font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">Ou payer avec</p>
+                    <div id="payment-request-button"></div>
+                </div>
             </div>
 
             <div class="loading" id="loading">
