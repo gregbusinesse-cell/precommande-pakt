@@ -261,6 +261,7 @@
         .video-container {
             display: flex;
             justify-content: center;
+            align-items: center;
             width: 100%;
             margin: 0 auto;
         }
@@ -268,11 +269,13 @@
         .video-section iframe {
             max-width: 100%;
             width: 100%;
+            max-width: 800px;
             max-height: 600px;
             height: auto;
             aspect-ratio: 16 / 9;
             border-radius: 12px;
-            margin: 2rem 0;
+            margin: 2rem auto;
+            display: block;
         }
 
         /* STORY */
@@ -724,7 +727,7 @@
         <p class="subtitle">
             Swipe, matche avec les bons entrepreneurs, lance ensemble. Une communauté de 50+ personnes qui cherchent juste ça : quelqu'un pour démarrer.
         </p>
-        <button class="cta-button">Devenir membre fondateur — 5€</button>
+        <button class="cta-button">Devenir membre fondateur — 20€ à vie</button>
         <div class="price-tag">Accès à vie contre 20€/mois à la sortie.</div>
         <p class="urgency">L'app sort dans les prochains jours sur iOS & Android.</p>
     </section>
@@ -732,7 +735,7 @@
     <!-- STATS / PROJECTION -->
     <section class="stats">
         <div class="stat">
-            <div class="stat-number">1 semaine max</div>
+            <div class="stat-number">1 semaine</div>
             <div class="stat-label">Pour ton premier match</div>
         </div>
         <div class="stat">
@@ -750,8 +753,8 @@
         <h2>Regardez PAKT en action</h2>
         <p style="color: var(--text-secondary); margin-bottom: 2rem; font-weight: 500;">30 secondes pour comprendre comment trouver ton co-fondateur.</p>
         <iframe width="100%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <button class="cta-button" style="margin-top: 2rem;">Devenir membre fondateur — 5€</button>
-        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">Accès à vie contre 20€/mois à la sortie. Badge Fondateur inclus.</p>
+        <button class="cta-button" style="margin-top: 2rem;">Devenir membre fondateur — 20€ à vie</button>
+        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">20€ payés une fois. Accès gratuit à vie à l'app. Badge Fondateur + avant-première.</p>
     </section>
 
     <!-- FEATURES -->
@@ -763,7 +766,7 @@
             <div class="feature-card">
                 <h3>ÉTAPE 1</h3>
                 <div class="title">Crée ton profil en moins de 2 minutes</div>
-                <p>Très rapide. Raconte qui tu es, tes compétences, tes objectifs. Pas de CV ennuyeux. Juste toi, authentique. Les entrepreneurs voient tout de suite s'il y a du potentiel. Paye d'entrée et tu entres directement.</p>
+                <p>Très rapide. Raconte qui tu es, tes compétences, tes objectifs. Juste toi, authentique. Les entrepreneurs voient tout de suite s'il y a du potentiel.</p>
             </div>
 
             <div class="feature-card">
@@ -800,8 +803,8 @@
 
     <!-- CTA REPETEE -->
     <section class="cta-section" style="margin: 3rem auto; max-width: 900px;">
-        <button class="cta-button">Devenir membre fondateur — 5€</button>
-        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">Accès à vie · Zéro abonnement · Zéro engagement</p>
+        <button class="cta-button">Devenir membre fondateur — 20€ à vie</button>
+        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">20€ payés une fois · Gratuit à vie · Zéro engagement</p>
     </section>
 
     <!-- STORY -->
@@ -835,34 +838,21 @@
     <!-- PRICING -->
     <section id="pricing" style="text-align: center;">
         <h2>L'app mobile PAKT : Précommande ouverte</h2>
-        <p class="subtitle" style="margin-bottom: 3rem;">À la sortie (septembre 2026), les prix quadrupleront. Là, tu peux l'avoir à vie pour une fraction du prix.</p>
+        <p class="subtitle" style="margin-bottom: 3rem;">Membre Fondateur. Accès gratuit à vie. Badge spécial. Avant-première.</p>
 
-        <div class="pricing-box">
+        <div class="pricing-box" style="max-width: 500px; margin: 0 auto;">
             <div class="price-card highlight">
-                <h3>OPTION 1 : FONDATEUR</h3>
-                <div class="amount">5€</div>
-                <div class="period">À vie</div>
+                <h3>MEMBRE FONDATEUR</h3>
+                <div class="amount">20€</div>
+                <div class="period">Payé une fois</div>
                 <div class="description">
-                    <strong>Accès complet. Pour toujours.</strong><br>
-                    Zéro abonnement récurrent.<br>
-                    À la sortie : 20€/mois (240€/an)<br>
-                    Plus tard : jusqu'à 80€/mois (960€/an)
+                    <strong>Tu es parmi les premiers.</strong><br>
+                    Accès gratuit à l'app à vie.<br>
+                    Badge Fondateur sur ton profil.<br>
+                    Avant-première à la sortie.
                 </div>
-                <p style="font-size: 0.85rem; color: var(--accent); margin-top: 1rem; font-weight: 600;">+ Badge Fondateur visible sur ton profil</p>
-                <button class="cta-button" style="width: 100%;">Précommander maintenant</button>
-            </div>
-
-            <div class="price-card highlight">
-                <h3>OPTION 2 : ACCÈS DIRECT</h3>
-                <div class="amount">49€</div>
-                <div class="period">À vie</div>
-                <div class="description">
-                    <strong>Accès complet. Pour toujours.</strong><br>
-                    Même tarif garanti même après la sortie.<br>
-                    À la sortie : les prix quadrupleront.<br>
-                    Tu paies 49€ une fois. C'est tout.
-                </div>
-                <button class="cta-button" style="width: 100%;">Payer maintenant</button>
+                <p style="font-size: 0.85rem; color: var(--accent); margin-top: 1rem; font-weight: 600;">À la sortie : les autres paieront 20€/mois</p>
+                <button class="cta-button" style="width: 100%;">Devenir fondateur</button>
             </div>
         </div>
 
@@ -946,7 +936,7 @@
 
             <div class="faq-item">
                 <div class="faq-question">
-                    <span>Et si je change d'avis après avoir payé 5€ ?</span>
+                    <span>Et si je change d'avis après avoir payé 20€ ?</span>
                     <span class="faq-toggle">▼</span>
                 </div>
                 <div class="faq-answer">
@@ -961,7 +951,7 @@
     <footer>
         <div class="footer-cta">
             <h3>Prêt à trouver ton co-fondateur ?</h3>
-            <p>Deviens membre fondateur de PAKT et accède à vie pour 5€</p>
+            <p>Deviens membre fondateur de PAKT. 20€ à vie, gratuit à l'app.</p>
             <button class="cta-button" style="background: var(--accent);">Précommander maintenant</button>
             <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">Paiement sécurisé Stripe · Remboursable jusqu'à sortie</p>
         </div>
