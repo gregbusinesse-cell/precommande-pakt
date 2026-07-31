@@ -122,24 +122,18 @@
                 <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Informations personnelles</h2>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="name">Prénom *</label>
+                    <input type="text" id="name" name="name" placeholder="Ton prénom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
                     <input type="email" id="email" name="email" placeholder="ton@email.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Nom complet</label>
-                    <input type="text" id="name" name="name" placeholder="Prénom Nom" required>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="country">Pays</label>
-                        <input type="text" id="country" name="country" placeholder="France" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="postal">Code postal</label>
-                        <input type="text" id="postal" name="postal" placeholder="75001" required>
-                    </div>
+                    <label for="phone">Numéro de téléphone <span style="color: #FFFFFF99;">(facultatif)</span></label>
+                    <input type="tel" id="phone" name="phone" placeholder="+33 6 XX XX XX XX">
                 </div>
             </div>
 
@@ -162,11 +156,11 @@
         <div class="benefits">
             <h3>Après le paiement</h3>
             <ol style="margin-left: 1.5rem; color: #FFFFFF99;">
-                <li>Tu reçois un email avec ton code promo App Store</li>
-                <li>Tu télécharges PAKT gratuitement sur l'App Store/Google Play</li>
-                <li>Entre le code → L'app se télécharge GRATUITEMENT</li>
-                <li>Crée ton profil avec le badge Fondateur</li>
-                <li>Commence à matcher avec d'autres entrepreneurs !</li>
+                <li>Tu reçois un email avec ton code promo unique</li>
+                <li>Reste bien à l'affût ! Tu seras parmi les premiers informés quand PAKT sort (septembre 2026)</li>
+                <li>Dès que l'app est disponible, tu reçois une notification</li>
+                <li>Télécharge PAKT et entre ton code pour un accès gratuit à vie</li>
+                <li>Crée ton profil avec le badge Fondateur et commence à matcher !</li>
             </ol>
         </div>
     </div>
@@ -175,8 +169,7 @@
     <script src="https://js.stripe.com/v3/"></script>
 
     <script>
-        // REMPLACE CES CLÉS PAR TES VRAIES CLÉS STRIPE
-        const stripe = Stripe('pk_live_YOUR_PUBLISHABLE_KEY'); // À remplacer
+        const stripe = Stripe('pk_test_51TzIexK6SoceC7QdWGn64ocaOGpDGjBUvDVB4Y43YJ2NMbclXrAq9QGNhU6JBbcigSHq3SmtPqjZX7gPuJf1HimA00qsMpilUA');
         const elements = stripe.elements();
         const cardElement = elements.create('card');
         cardElement.mount('#card-element');
@@ -208,20 +201,15 @@
 
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
-            const country = document.getElementById('country').value;
-            const postal = document.getElementById('postal').value;
 
             // Crée le Payment Intent côté serveur
-            // (Tu dois avoir un backend pour ça)
-            const response = await fetch('/create-payment-intent', {
+            const response = await fetch('/api/create-payment-intent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: 2000, // 20€ en centimes
+                    amount: 2000,
                     email: email,
-                    name: name,
-                    country: country,
-                    postal: postal
+                    name: name
                 })
             });
 
@@ -233,11 +221,7 @@
                     card: cardElement,
                     billing_details: {
                         name: name,
-                        email: email,
-                        address: {
-                            country: country,
-                            postal_code: postal
-                        }
+                        email: email
                     }
                 }
             });
