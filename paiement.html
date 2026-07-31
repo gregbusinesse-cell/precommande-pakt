@@ -176,6 +176,10 @@
                 <li>Jamais de frais récurrents</li>
                 <li>Code promo unique par email</li>
             </ul>
+
+            <div style="background: rgba(68, 255, 68, 0.1); border: 1px solid #44ff44; border-radius: 6px; padding: 0.75rem; margin-top: 2rem; text-align: center; font-size: 0.9rem; color: #44ff44;">
+                🔒 100% sécurisé via Stripe
+            </div>
         </div>
 
         <!-- Colonne droite: Formulaire de paiement -->
@@ -214,10 +218,6 @@
                         <h3>Paiement</h3>
                     </div>
 
-                    <div style="background: rgba(68, 255, 68, 0.1); border: 1px solid #44ff44; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.5rem; text-align: center; font-size: 0.9rem; color: #44ff44;">
-                        🔒 100% sécurisé via Stripe
-                    </div>
-
                     <div class="form-group">
                         <label>Numéro de carte</label>
                         <div id="card-element" class="stripe-element"></div>
@@ -241,8 +241,8 @@
                     <!-- Autres moyens de paiement -->
                     <div class="payment-methods-divider">
                         <p class="payment-methods-label">Ou payer avec</p>
-                        <div id="payment-request-button"></div>
-                        <div id="paypal-button-container" style="margin-top: 1rem;"></div>
+                        <div id="payment-request-button" style="margin-bottom: 1rem;"></div>
+                        <div id="paypal-button-container"></div>
                     </div>
                 </div>
 
