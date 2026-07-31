@@ -36,6 +36,13 @@
             padding: 3rem 2rem;
         }
 
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 4rem;
+        }
+
         .left-column h2 { font-size: 1.8rem; margin-bottom: 2rem; color: #D4AF37; }
         .left-column ul { list-style: none; }
         .left-column li { display: flex; align-items: flex-start; margin-bottom: 1.5rem; }
@@ -249,7 +256,11 @@
                     <div class="payment-methods-divider">
                         <p class="payment-methods-label">Ou payer avec</p>
                         <div id="payment-request-button" style="margin-bottom: 1rem;"></div>
-                        <div id="paypal-button-container"></div>
+                        <div id="paypal-button-container" style="min-height: 50px; margin-top: 1rem;">
+                            <button id="paypal-fallback-btn" type="button" style="width: 100%; padding: 0.75rem; background: #0070BA; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; display: none;">
+                                PayPal
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -385,63 +396,79 @@
         });
 
         // PayPal Button
+        const paypalContainer = document.getElementById('paypal-button-container');
+        const paypalFallback = document.getElementById('paypal-fallback-btn');
+
         if (typeof paypal !== 'undefined') {
-            paypal.Buttons({
-                createOrder: async (data, actions) => {
-                    const name = document.getElementById('name').value;
-                    const email = document.getElementById('email').value;
+            try {
+                paypal.Buttons({
+                    createOrder: async (data, actions) => {
+                        const name = document.getElementById('name').value;
+                        const email = document.getElementById('email').value;
 
-                    if (!name || !email) {
-                        errorDiv.textContent = 'Prénom et Email requis pour PayPal';
-                        errorDiv.style.display = 'block';
-                        throw new Error('Prénom et Email requis');
-                    }
-
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: '20.00',
-                                currency_code: 'EUR'
-                            }
-                        }],
-                        payer: {
-                            name: {
-                                given_name: name
-                            },
-                            email_address: email
+                        if (!name || !email) {
+                            errorDiv.textContent = 'Prénom et Email requis pour PayPal';
+                            errorDiv.style.display = 'block';
+                            throw new Error('Prénom et Email requis');
                         }
-                    });
-                },
-                onApprove: async (data, actions) => {
-                    const order = await actions.order.capture();
-                    const email = document.getElementById('email').value;
-                    const name = document.getElementById('name').value;
 
-                    try {
-                        await fetch('/api/create-payment-intent', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                amount: 2000,
-                                email: email,
-                                name: name,
-                                paypalOrderId: order.id
-                            })
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    value: '20.00',
+                                    currency_code: 'EUR'
+                                }
+                            }],
+                            payer: {
+                                name: {
+                                    given_name: name
+                                },
+                                email_address: email
+                            }
                         });
-                        window.location.href = '/merci.html';
-                    } catch (err) {
-                        console.error('Error:', err);
-                        cardErrors.textContent = 'Erreur lors du traitement du paiement PayPal';
+                    },
+                    onApprove: async (data, actions) => {
+                        const order = await actions.order.capture();
+                        const email = document.getElementById('email').value;
+                        const name = document.getElementById('name').value;
+
+                        try {
+                            await fetch('/api/create-payment-intent', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    amount: 2000,
+                                    email: email,
+                                    name: name,
+                                    paypalOrderId: order.id
+                                })
+                            });
+                            window.location.href = '/merci.html';
+                        } catch (err) {
+                            console.error('Error:', err);
+                            cardErrors.textContent = 'Erreur lors du traitement du paiement PayPal';
+                            cardErrors.style.display = 'block';
+                        }
+                    },
+                    onError: (err) => {
+                        console.error('PayPal error:', err);
+                        cardErrors.textContent = 'Erreur PayPal';
                         cardErrors.style.display = 'block';
                     }
-                },
-                onError: (err) => {
-                    console.error('PayPal error:', err);
-                    cardErrors.textContent = 'Erreur PayPal';
-                    cardErrors.style.display = 'block';
-                }
-            }).render('#paypal-button-container');
+                }).render('#paypal-button-container').catch(() => {
+                    paypalFallback.style.display = 'block';
+                });
+            } catch (err) {
+                paypalFallback.style.display = 'block';
+            }
+        } else {
+            paypalFallback.style.display = 'block';
         }
+
+        // PayPal fallback button click handler
+        paypalFallback.addEventListener('click', () => {
+            window.open('https://www.paypal.com', '_blank');
+        });
 
         // Soumission du formulaire (Carte bancaire avec 3 éléments séparés)
         form.addEventListener('submit', async (e) => {
