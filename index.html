@@ -986,10 +986,9 @@
         });
 
         // CTA Buttons
-        document.querySelectorAll('.cta-button').forEach(button => {
+        document.querySelectorAll('.cta-button, nav button.cta').forEach(button => {
             button.addEventListener('click', function(e) {
                 if (button.textContent.includes('Précommander') || button.textContent.includes('Devenir')) {
-                    // Redirect to payment page
                     window.location.href = '/paiement.html';
                 }
             });
