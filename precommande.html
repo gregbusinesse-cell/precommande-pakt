@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAKT — Tinder du business. Trouve tes co-fondateurs.</title>
+    <meta name="description" content="PAKT : L'app qui te connecte avec des entrepreneurs pour lancer ensemble. Swipe, matche, lance ton projet. Disponible sur iOS et Android.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a0a0a;
+            --accent: #D4AF37;
+            --accent-light: #E8C547;
+            --accent-dark: #B8941F;
+            --accent-violet: #4F46E5;
+            --light: #f9f8f5;
+            --dark: #0f0f0f;
+            --text: #FFFFFF;
+            --text-secondary: #FFFFFF99;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--primary);
+        }
+
+        /* NAVIGATION */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        nav a, nav button {
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-left: 2rem;
+            font-weight: 500;
+        }
+
+        nav button.cta {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        nav button.cta:hover {
+            background: var(--accent-light);
+        }
+
+        /* HERO */
+        .hero {
+            padding: 6rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.15;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--primary);
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            letter-spacing: -0.3px;
+        }
+
+        .cta-button:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--accent);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .price-tag {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            font-weight: 700;
+            border: 1px solid var(--accent);
+        }
+
+        .urgency {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 4rem 2rem;
+            background: var(--dark);
+            text-align: center;
+        }
+
+        .stat {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-label {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* SECTION */
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        section .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 500;
+        }
+
+        /* FEATURES GRID */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .feature-card h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .feature-card .title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* VIDEO SECTION */
+        .video-section {
+            background: #1a1a1a;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 3rem auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .video-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .video-section iframe {
+            max-width: 100%;
+            width: 100%;
+            max-height: 600px;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        /* STORY */
+        .story {
+            background: #1a1a1a;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .story-content {
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .story-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+        }
+
+        .story-signature {
+            font-weight: 600;
+            margin-top: 2rem;
+            color: var(--accent);
+        }
+
+        /* PRICING */
+        .pricing-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .price-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .price-card.highlight {
+            border: 2px solid var(--accent);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .price-card h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .price-card .amount {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 1rem 0;
+            letter-spacing: -0.5px;
+        }
+
+        .price-card .period {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .price-card .description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* FAQ */
+        .faq-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            background: #0f0f0f;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text);
+        }
+
+        .faq-question:hover {
+            background: #1a1a1a;
+        }
+
+        .faq-answer {
+            padding: 1.5rem;
+            display: none;
+            background: #1a1a1a;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        .faq-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+            color: var(--accent);
+        }
+
+        .faq-toggle.active {
+            transform: rotate(180deg);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            color: var(--text);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        footer .footer-cta {
+            margin: 2rem 0;
+        }
+
+        footer .footer-cta h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        footer .footer-cta p {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        /* BENEFITS LIST */
+        .benefits-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .benefits-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: flex-start;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .benefits-list li:before {
+            content: "✓";
+            color: var(--accent);
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            text-align: center;
+            background: #1a1a1a;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            nav > div {
+                width: 100%;
+                display: flex !important;
+                justify-content: space-between !important;
+            }
+
+            nav a, nav button {
+                margin-left: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            nav button.cta {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hero {
+                padding: 3rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero .subtitle {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .cta-button {
+                padding: 0.85rem 2rem;
+                font-size: 1rem;
+            }
+
+            .price-tag {
+                font-size: 0.85rem;
+                padding: 0.6rem 1.2rem;
+            }
+
+            section {
+                padding: 2.5rem 1rem;
+                max-width: 100%;
+            }
+
+            section h2 {
+                font-size: 1.75rem;
+            }
+
+            section .subtitle {
+                font-size: 1rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 2rem 1rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .stat-label {
+                font-size: 0.95rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .feature-card .title {
+                font-size: 1.1rem;
+            }
+
+            .feature-card p {
+                font-size: 0.9rem;
+            }
+
+            .video-section {
+                padding: 2rem 1rem;
+                margin: 2rem 0;
+            }
+
+            .video-section iframe {
+                height: 250px;
+            }
+
+            .cta-section {
+                padding: 2rem 1rem;
+                margin: 1.5rem 0;
+            }
+
+            .story {
+                padding: 2rem 1rem;
+            }
+
+            .story-content p {
+                font-size: 0.95rem;
+            }
+
+            .pricing-box {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .price-card h3 {
+                font-size: 1.15rem;
+            }
+
+            .price-card .amount {
+                font-size: 2.2rem;
+            }
+
+            .price-card .period {
+                font-size: 0.95rem;
+            }
+
+            .faq-question {
+                padding: 1.2rem;
+                font-size: 0.95rem;
+            }
+
+            .faq-answer {
+                padding: 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            footer {
+                padding: 2.5rem 1rem;
+            }
+
+            footer .footer-cta h3 {
+                font-size: 1.5rem;
+            }
+
+            footer .footer-cta p {
+                font-size: 1rem;
+            }
+
+            footer .footer-links {
+                gap: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 0.75rem;
+            }
+
+            nav a {
+                display: none;
+            }
+
+            nav button.cta {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+                line-height: 1.2;
+            }
+
+            .hero .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .cta-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .price-card .amount {
+                font-size: 2rem;
+            }
+
+            .video-section iframe {
+                height: 200px;
+            }
+
+            footer .footer-cta h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="#" class="logo">PAKT</a>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="#features">Fonctionnalités</a>
+            <a href="#pricing">Tarifs</a>
+            <button class="cta">Précommander</button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Tinder du business.<br>Trouve tes co-fondateurs.</h1>
+        <p class="subtitle">
+            Swipe, matche avec les bons entrepreneurs, lance ensemble. Une communauté de 50+ personnes qui cherchent juste ça : quelqu'un pour démarrer.
+        </p>
+        <button class="cta-button">Devenir membre fondateur — 5€</button>
+        <div class="price-tag">Accès à vie contre 20€/mois à la sortie.</div>
+        <p class="urgency">L'app sort dans les prochains jours sur iOS & Android.</p>
+    </section>
+
+    <!-- STATS / PROJECTION -->
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-number">Moins d'1 semaine</div>
+            <div class="stat-label">Pour ton premier match</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">2-4</div>
+            <div class="stat-label">Partenaires ou associés identifiés</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">Illimité</div>
+            <div class="stat-label">Accès à tous les profils</div>
+        </div>
+    </section>
+
+    <!-- VIDEO SECTION -->
+    <section class="cta-section">
+        <h2>Regardez PAKT en action</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-weight: 500;">30 secondes pour comprendre comment trouver ton co-fondateur.</p>
+        <iframe width="100%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <button class="cta-button" style="margin-top: 2rem;">Devenir membre fondateur — 5€</button>
+        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">Accès à vie contre 20€/mois à la sortie. Badge Fondateur inclus.</p>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+        <h2>Comment PAKT fonctionne</h2>
+        <p class="subtitle">Partout en France. Des entrepreneurs qui veulent vraiment lancer.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>ÉTAPE 1</h3>
+                <div class="title">Crée ton profil en moins de 2 minutes</div>
+                <p>Très rapide. Raconte qui tu es, tes compétences, tes objectifs. Pas de CV ennuyeux. Juste toi, authentique. Les entrepreneurs voient tout de suite s'il y a du potentiel. Paye d'entrée et tu entres directement.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>ÉTAPE 2</h3>
+                <div class="title">Swipe & matche</div>
+                <p>Explore les profils, swipe à gauche ou à droite. Si tu likes quelqu'un et que personne t'aime aussi, c'est un match. Vous pouvez discuter directement dans l'app.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>ÉTAPE 3</h3>
+                <div class="title">Lance ensemble</div>
+                <p>Chatez, échangez vos idées, testez la chimie. Tu cherches un co-fondateur, un partenaire, un designer, un développeur ? Tu trouves exactement ce qu'il te faut sur PAKT. Une fois alignés, vous lancez.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>ÉTAPE 4</h3>
+                <div class="title">Sécurité & modération</div>
+                <p>Tes données sont sécurisées et jamais partagées. Conformité RGPD complète. Système de modération actif : en cas de fraude ou arnaque, notre équipe répond en moins de 24h. Tous les profils sont vérifiés. Zéro bot, transparence totale.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>BONUS</h3>
+                <div class="title">Tous les types de projets</div>
+                <p>Tu veux lancer un business en ligne ? Une agence ? Un restaurant ? Un projet physique ? PAKT marche pour tout. Que ce soit une startup tech, un commerce, un service ou un projet créatif : tu trouves tes partenaires. Pour tout type de projet, en ligne ou en physique.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>BONUS</h3>
+                <div class="title">Une vraie communauté</div>
+                <p>Au-delà des matchs. On construit un réseau où les entrepreneurs s'aident, partagent leurs victoires, se challengent. Ton meilleur réseau, c'est ici.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA REPETEE -->
+    <section class="cta-section" style="margin: 3rem auto; max-width: 900px;">
+        <button class="cta-button">Devenir membre fondateur — 5€</button>
+        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 500;">Accès à vie · Zéro abonnement · Zéro engagement</p>
+    </section>
+
+    <!-- STORY -->
+    <section class="story">
+        <h2>Pourquoi j'ai créé PAKT</h2>
+        <div class="story-content">
+            <p>
+                <strong>J'ai voulu lancer mon projet.</strong> J'avais des compétences solides, de la vision, de l'énergie. Mais pas tout. Il y avait des trucs que je ne maîtrisais pas.
+            </p>
+
+            <p>
+                <strong>Et là c'est devenu clair :</strong> le marché bouge trop vite. Je pouvais pas passer 6 mois à apprendre des skills que quelqu'un d'autre maîtrise déjà. J'avais besoin de gens avec les bonnes compétences à côté de moi. Maintenant.
+            </p>
+
+            <p>
+                <strong>J'ai cherché ces personnes.</strong> Et quand je les ai trouvées, j'ai eu le déclic. Ces gens-là, ils cherchaient aussi. Mais pas un système clair pour se rencontrer. Juste du flou, du bruit, des faux contacts.
+            </p>
+
+            <p>
+                <strong>Ça m'a perturbé.</strong> Comment des entrepreneurs sérieux, avec les bonnes compétences et les vraies ambitions, ne se trouvaient pas ? Comment le système était si mauvais pour ça ?
+            </p>
+
+            <p>
+                C'est là que PAKT est née. Une plateforme simple et directe. Pour que les gens avec les bonnes compétences se trouvent. Pour que tu lances vite. Pour que tu construises vraiment.
+            </p>
+
+            <p class="story-signature">— Greg, Fondateur de PAKT</p>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" style="text-align: center;">
+        <h2>L'app mobile PAKT : Précommande ouverte</h2>
+        <p class="subtitle" style="margin-bottom: 3rem;">À la sortie (septembre 2026), les prix quadrupleront. Là, tu peux l'avoir à vie pour une fraction du prix.</p>
+
+        <div class="pricing-box">
+            <div class="price-card highlight">
+                <h3>OPTION 1 : FONDATEUR</h3>
+                <div class="amount">5€</div>
+                <div class="period">À vie</div>
+                <div class="description">
+                    <strong>Accès complet. Pour toujours.</strong><br>
+                    Zéro abonnement récurrent.<br>
+                    À la sortie : 20€/mois (240€/an)<br>
+                    Plus tard : jusqu'à 80€/mois (960€/an)
+                </div>
+                <p style="font-size: 0.85rem; color: var(--accent); margin-top: 1rem; font-weight: 600;">+ Badge Fondateur visible sur ton profil</p>
+                <button class="cta-button" style="width: 100%;">Précommander maintenant</button>
+            </div>
+
+            <div class="price-card highlight">
+                <h3>OPTION 2 : ACCÈS DIRECT</h3>
+                <div class="amount">49€</div>
+                <div class="period">À vie</div>
+                <div class="description">
+                    <strong>Accès complet. Pour toujours.</strong><br>
+                    Même tarif garanti même après la sortie.<br>
+                    À la sortie : les prix quadrupleront.<br>
+                    Tu paies 49€ une fois. C'est tout.
+                </div>
+                <button class="cta-button" style="width: 100%;">Payer maintenant</button>
+            </div>
+        </div>
+
+        <p style="text-align: center; color: var(--text-secondary); margin-top: 1.5rem; font-weight: 500;">Paiement sécurisé Stripe · Disponible immédiatement</p>
+
+        <div class="cta-section" style="max-width: 700px; margin: 3rem auto;">
+            <h3 style="margin-bottom: 1rem; font-weight: 800;">Pourquoi 5€ si ça vaudra 20€/mois ?</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; font-weight: 500;">
+                <strong>Tu nous fais confiance avant la sortie.</strong> Tu crois au projet. Tu nous aides à valider la demande. À la sortie, les prix quadrupleront (jusqu'à 80€/mois). Toi, tu gardes ton tarif de précommande. Pour toujours. C'est l'avantage des premiers.
+            </p>
+        </div>
+    </section>
+
+    <!-- PROOF -->
+    <section style="background: #0f0f0f; border-radius: 12px; border: 1px solid var(--border);">
+        <h2>Pourquoi PAKT marche vraiment</h2>
+
+        <div class="features-grid">
+            <div class="feature-card" style="background: #1a1a1a;">
+                <h3 style="color: var(--accent);">Zéro algorithme. Égalité totale.</h3>
+                <p>On n'est pas des escrocs. Tout le monde a payé. Tout le monde a la même chance. Pas de trucage, pas de profils privilégiés. Tu paies, tu as accès à tous les profils. C'est ça.</p>
+            </div>
+
+            <div class="feature-card" style="background: #1a1a1a;">
+                <h3 style="color: var(--accent);">Filtres intelligents, pas d'algo</h3>
+                <p>Tu cherches quelqu'un de ton âge, de ta région, avec les compétences X ? Les filtres font juste ça. Pas de dark patterns. Pas de manipulation. Juste les bonnes personnes.</p>
+            </div>
+
+            <div class="feature-card" style="background: #1a1a1a;">
+                <h3 style="color: var(--accent);">Trouve et démarre</h3>
+                <p>Tu trouves la personne qu'il te fallait pour ton business. Ton cofondateur, associé, partenaire. Et vous commencez à imprimer de l'argent. C'est ça le vrai résultat.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+        <h2>Les questions que tu te poses</h2>
+        <p class="subtitle">Réponses claires.</p>
+
+        <div class="faq-section" style="margin-top: 2rem;">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Qu'est-ce que tu fais avec mes données ?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    On montre ton profil aux autres entrepreneurs qui swipent sur PAKT. C'est tout. Tes données restent sécurisées, jamais vendues, jamais partagées. Conformité RGPD complète. En cas de fraude ou arnaque, notre équipe modère en moins de 24h. Zéro spam, zéro bot.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>C'est sur iOS et Android ?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Oui, les deux. App Store et Google Play. Et surtout : quelqu'un sur iPhone peut matcher avec quelqu'un sur Android. Tout le monde peut se trouver, peu importe son téléphone.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Combien de temps avant de trouver mon partenaire ?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    En moyenne, moins d'une semaine. Mais ça dépend de ce que tu cherches. Si tu cherches quelqu'un avec des skills très spécifiques, ça peut prendre plus longtemps. L'important : tu swipes, tu trouves les gens qui matche vraiment avec toi, vous discutez et vous lancez.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Et si on ne s'entend pas une fois qu'on se rencontre ?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    C'est normal. Trouver le bon partenaire prend du temps. Sur PAKT tu testes la chimie avant de vous engager vraiment. C'est pour ça qu'on te conseille de discuter et d'échanger avant de lancer officiellement.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Et si je change d'avis après avoir payé 5€ ?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <strong>Remboursement intégral sur simple email. Tant que l'app n'est pas sortie.</strong> Pas de question. Pas de justification. Tu dis "j'ai changé d'avis", on te rembourse. Risque zéro pour toi.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-cta">
+            <h3>Prêt à trouver ton co-fondateur ?</h3>
+            <p>Deviens membre fondateur de PAKT et accède à vie pour 5€</p>
+            <button class="cta-button" style="background: var(--accent);">Précommander maintenant</button>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">Paiement sécurisé Stripe · Remboursable jusqu'à sortie</p>
+        </div>
+
+        <div class="footer-links">
+            <a href="#conditions">CGU</a>
+            <a href="#conditions">Politique de confidentialité</a>
+            <a href="#conditions">Mentions légales</a>
+            <a href="mailto:contact@pakt.app">Contact</a>
+        </div>
+
+        <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">© 2026 PAKT · Tinder du business. Trouve tes co-fondateurs.</p>
+    </footer>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const toggle = this.querySelector('.faq-toggle');
+
+                document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('active'));
+                document.querySelectorAll('.faq-toggle').forEach(t => t.classList.remove('active'));
+
+                answer.classList.add('active');
+                toggle.classList.add('active');
+            });
+        });
+
+        // CTA Buttons
+        document.querySelectorAll('.cta-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (button.textContent.includes('Précommander') || button.textContent.includes('Devenir')) {
+                    // Redirect to payment page (Stripe/Paddle)
+                    window.location.href = 'https://www.paceappstore.com/precommande-pakt'; // À remplacer par ton lien réel
+                }
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href') !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
