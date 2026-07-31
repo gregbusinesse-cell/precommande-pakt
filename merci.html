@@ -115,6 +115,32 @@
             color: #FFFFFF;
         }
 
+        .promo-code-box {
+            background: #1a1a1a;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .promo-code-box p {
+            color: #FFFFFF99;
+            margin-bottom: 0.75rem;
+        }
+
+        .promo-code-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #D4AF37;
+            letter-spacing: 3px;
+        }
+
+        .promo-loading {
+            color: #FFFFFF99;
+            font-style: italic;
+        }
+
         .cta-button {
             display: inline-block;
             background: #D4AF37;
@@ -172,10 +198,15 @@
         <h1>Paiement Réussi !</h1>
         <p class="subtitle">Bienvenue dans la communauté des Membres Fondateurs PAKT</p>
 
+        <div class="promo-code-box" id="promo-box">
+            <p>Ton code promo unique</p>
+            <p class="promo-loading" id="promo-loading">Génération en cours...</p>
+            <p class="promo-code-value" id="promo-code" style="display: none;"></p>
+        </div>
+
         <div class="email-info">
-            <p><strong>Ton code promo arrive bientôt</strong></p>
-            <p>Tu vas recevoir un email personnalisé avec ton <strong>code promo unique</strong> sous 24h, directement de notre équipe.</p>
-            <p style="margin-top: 1rem; color: #FFFFFF99; font-size: 0.85rem;">Pas de panique si tu ne le vois pas dans l'instant, ce n'est pas automatique.</p>
+            <p><strong>Garde bien ce code</strong></p>
+            <p>Tu recevras aussi un message personnalisé de notre équipe sous 24h avec toutes les infos.</p>
         </div>
 
         <div class="benefits">
@@ -207,8 +238,7 @@
         <div style="background: #1a1a1a; border: 1px solid #333333; border-radius: 12px; padding: 2rem; margin: 2rem 0;">
             <h3 style="color: #D4AF37; margin-bottom: 1.5rem;">Prochaines étapes</h3>
             <ol style="list-style: decimal; margin-left: 1.5rem; color: #FFFFFF99; text-align: left;">
-                <li>Attends ton email personnalisé sous 24h</li>
-                <li>Copie ton code promo unique</li>
+                <li>Copie ton code promo unique ci-dessus</li>
                 <li>Reste à l'affût en septembre 2026 pour le lancement</li>
                 <li>Dès que l'app sort, tu recevras une notification</li>
                 <li>Va sur l'App Store (iOS) ou Google Play (Android)</li>
@@ -224,5 +254,40 @@
             <p style="margin-top: 1rem;">Ou <a href="/">retourne à l'accueil</a></p>
         </div>
     </div>
+
+    <script>
+        (async () => {
+            const params = new URLSearchParams(window.location.search);
+            const paymentIntentId = params.get('payment_intent');
+            const promoLoading = document.getElementById('promo-loading');
+            const promoCode = document.getElementById('promo-code');
+
+            if (!paymentIntentId) {
+                promoLoading.textContent = 'Contacte-nous à paktsupport@gmail.com avec ta preuve de paiement pour recevoir ton code.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/record-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentIntentId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.promoCode) {
+                    promoLoading.style.display = 'none';
+                    promoCode.textContent = data.promoCode;
+                    promoCode.style.display = 'block';
+                } else {
+                    promoLoading.textContent = 'Contacte-nous à paktsupport@gmail.com avec ta preuve de paiement pour recevoir ton code.';
+                }
+            } catch (err) {
+                console.error('Error recording payment:', err);
+                promoLoading.textContent = 'Contacte-nous à paktsupport@gmail.com avec ta preuve de paiement pour recevoir ton code.';
+            }
+        })();
+    </script>
 </body>
 </html>

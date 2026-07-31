@@ -399,7 +399,7 @@
                     e.complete('fail');
                 } else {
                     e.complete('success');
-                    window.location.href = '/merci.html';
+                    window.location.href = '/merci.html?payment_intent=' + paymentIntent.id;
                 }
             } catch (err) {
                 e.complete('fail');
@@ -519,7 +519,7 @@
                     cardErrors.textContent = error.message;
                     cardErrors.style.display = 'block';
                 } else if (paymentIntent.status === 'succeeded') {
-                    window.location.href = '/merci.html';
+                    window.location.href = '/merci.html?payment_intent=' + paymentIntent.id;
                 }
             } catch (err) {
                 console.error('Error:', err);
