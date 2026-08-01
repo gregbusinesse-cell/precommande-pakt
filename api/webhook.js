@@ -3,8 +3,7 @@ const { appendToSheet } = require('./append-to-sheet');
 const {
     loadPromoCodes,
     savePromoCodes,
-    generatePromoCode,
-    sendNotificationToSupport
+    generatePromoCode
 } = require('./payment-processing');
 
 function getRawBody(req) {
@@ -80,18 +79,13 @@ async function handler(req, res) {
             });
             savePromoCodes(codes);
 
-            const notifResult = await sendNotificationToSupport({
-                email, name, phone, promoCode, amount, paymentMethod,
-                paymentIntentId: paymentIntent.id
-            });
-
             const sheetResult = await appendToSheet({
                 email, name, phone, promoCode, amount, paymentMethod,
                 paymentIntentId: paymentIntent.id,
-                emailSent: notifResult.success
+                emailSent: false
             });
 
-            console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}. Notification: ${notifResult.success}. Sheet: ${sheetResult.success}`);
+            console.log(`✅ Payment succeeded for ${email}. Promo code: ${promoCode}. Sheet: ${sheetResult.success}`);
         }
 
         res.status(200).json({ received: true });

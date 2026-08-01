@@ -3,8 +3,7 @@ const { appendToSheet } = require('./append-to-sheet');
 const {
     loadPromoCodes,
     savePromoCodes,
-    generatePromoCode,
-    sendNotificationToSupport
+    generatePromoCode
 } = require('./payment-processing');
 
 module.exports = async function handler(req, res) {
@@ -58,18 +57,13 @@ module.exports = async function handler(req, res) {
         });
         savePromoCodes(existingCodes);
 
-        const notifResult = await sendNotificationToSupport({
-            email, name, phone, promoCode, amount, paymentMethod,
-            paymentIntentId: paymentIntent.id
-        });
-
         const sheetResult = await appendToSheet({
             email, name, phone, promoCode, amount, paymentMethod,
             paymentIntentId: paymentIntent.id,
-            emailSent: notifResult.success
+            emailSent: false
         });
 
-        console.log(`✅ Payment recorded for ${email}. Promo code: ${promoCode}. Notification: ${notifResult.success}. Sheet: ${sheetResult.success}`);
+        console.log(`✅ Payment recorded for ${email}. Promo code: ${promoCode}. Sheet: ${sheetResult.success}`);
 
         res.status(200).json({ promoCode, alreadyRecorded: false });
     } catch (error) {
